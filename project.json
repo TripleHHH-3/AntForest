@@ -1,0 +1,10 @@
+{
+    "name": "AntForest",
+    "main": "AntForest.js",
+    "ignore": [
+        "build"
+    ],
+    "packageName": "com.hhh.ant.forest",
+    "versionName": "1.0.0",
+    "versionCode": 1
+}
