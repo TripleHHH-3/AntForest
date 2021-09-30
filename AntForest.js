@@ -38,5 +38,8 @@ gray.recycle();
 
 //收集能量
 energyBallArr.forEach(eneryBall => {
-    click(eneryBall.x, eneryBall.y + EnergyBallConstant.ENERGY_BALL_REGION_Y)
+    click(eneryBall.x, eneryBall.y + EnergyBallConstant.REGION_Y)
 });
+
+sleep(500)
+text("查看更多好友").findOne().parent().click();
