@@ -6,5 +6,8 @@
     ],
     "packageName": "com.hhh.ant.forest",
     "versionName": "1.0.0",
-    "versionCode": 1
+    "versionCode": 1,
+    "launchConfig": {
+        "hideLogs": true
+    }
 }
