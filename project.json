@@ -1,6 +1,6 @@
 {
     "name": "AntForest",
-    "main": "AntForest.js",
+    "main": "AntForestUI.js",
     "ignore": [
         "build"
     ],
