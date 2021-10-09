@@ -2,8 +2,8 @@ require('./Crack.js').unfreeze();
 let EnergyBall = require('./EnergyBall.js');
 // let SysConstant = require(path + 'SysConstant.js');
 
-// //等待无障碍权限
-// auto.waitFor();
+//等待无障碍权限
+auto.waitFor();
 // 请求截图
 if (!requestScreenCapture()) {
     toastLog("请求截图失败，脚本取消！")
@@ -16,7 +16,7 @@ events.setKeyInterceptionEnabled("volume_up", true);
 events.observeKey();
 //设置监听
 events.onKeyDown("volume_up", () => {
-    toastLog("脚本停止");
+    toastLog("收集能量脚本停止！");
     exit();
 })
 
