@@ -18,7 +18,7 @@ ui.layout(
                                 <vertical padding="18 8" h="auto">
                                     <linear>
                                         <Switch margin="12 0" layout_weight="1" id="autoService" text="无障碍服务" textSize="15sp" checked="{{auto.service != null}}" />
-                                        <Switch margin="12 0" layout_weight="1" id="floatyService" text="悬浮窗权限" textSize="15sp" checked="false" />
+                                        <Switch margin="12 0" layout_weight="1" id="floatyService" text="悬浮窗权限" textSize="15sp" checked="{{floaty.checkPermission()}}" />
                                     </linear>
                                 </vertical>
                             </horizontal>
@@ -41,7 +41,7 @@ ui.layout(
                             </horizontal>
 
                             <horizontal gravity="right">
-                                <button style="Widget.AppCompat.Button.Colored" id="start" text="开 始 运 行" padding="12dp" w="*" textSize="17"/>
+                                <button style="Widget.AppCompat.Button.Colored" id="start" text="开 始 运 行" padding="12dp" w="*" textSize="17" />
                                 {/* <button style="Widget.AppCompat.Button.Colored" id="close" text="关闭线程" /> */}
                             </horizontal>
                         </vertical>
@@ -167,7 +167,7 @@ ui.layout(
         </vertical>
         {/* drawer */}
         <vertical layout_gravity="left" bg="#ffffff" w="280">
-            <img w="280" h="200" scaleType="fitXY" src="http://images.shejidaren.com/wp-content/uploads/2014/10/023746fki.jpg"/>
+            <img w="280" h="200" scaleType="fitXY" src="http://images.shejidaren.com/wp-content/uploads/2014/10/023746fki.jpg" />
             <scroll>
                 <list id="menu">
                     <horizontal bg="?selectableItemBackground" w="*">
@@ -217,10 +217,25 @@ ui.autoService.on("check", function (checked) {
     }
 });
 
+// 用户勾选悬浮窗的选项时，跳转到页面让用户去开启
+ui.floatyService.on("check", function (checked) {
+    if (checked && !floaty.checkPermission()) {
+        app.startActivity({
+            packageName: "com.android.settings",
+            className: "com.android.settings.Settings$AppDrawOverlaySettingsActivity",
+            data: "package:" + context.getPackageName(),
+        });
+    }
+    if (!checked && floaty.checkPermission()) {
+        ui.floatyService.checked = true;
+    }
+});
+
 // 当用户回到本界面时，resume事件会被触发
 ui.emitter.on("resume", function () {
     // 此时根据无障碍服务的开启情况，同步开关的状态
     ui.autoService.checked = auto.service != null;
+    ui.floatyService.checked = floaty.checkPermission();
 });
 
 ui.emitter.on("back_pressed", (e) => {
