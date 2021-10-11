@@ -53,7 +53,13 @@ ui.layout(
                         <vertical marginTop="5">
                             <card w="*" h="auto" margin="10 5" cardCornerRadius="2dp" cardElevation="1dp" gravity="center_vertical">
                                 <vertical padding="18 8" marginBottom="2" h="auto">
-                                    <text text="[发现boss设置]" color="#FFA500" textStyle="bold" textSize="15sp" />
+                                    <text text="[解锁设置]" color="#FFA500" textStyle="bold" textSize="15sp" />
+                                    <radiogroup orientation="horizontal" >
+                                        <text text="解锁方式" w="auto" textStyle="bold" />
+                                        <radio id="单选框_是否不限" text="无密码" checked="true" marginLeft='5' />
+                                        <radio id="单选框_是否男" text="数字解锁" marginLeft='5' />
+                                        <radio id="单选框_是否女" text="滑动解锁" marginLeft='5' disable="true" />
+                                    </radiogroup>
                                     <horizontal>
                                         <text text="私信次数:" textStyle="bold" textSize="15sp" />
                                         <input id="输入框_私信次数" text="0" color="#666666" w="*" />
