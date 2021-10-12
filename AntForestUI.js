@@ -54,87 +54,23 @@ ui.layout(
                             <card w="*" h="auto" margin="10 5" cardCornerRadius="2dp" cardElevation="1dp" gravity="center_vertical">
                                 <vertical padding="18 8" marginBottom="2" h="auto">
                                     <text text="[解锁设置]" color="#FFA500" textStyle="bold" textSize="15sp" />
-                                    <radiogroup orientation="horizontal" >
-                                        <text text="解锁方式" w="auto" textStyle="bold" />
-                                        <radio id="单选框_是否不限" text="无密码" checked="true" marginLeft='5' />
-                                        <radio id="单选框_是否男" text="数字解锁" marginLeft='5' />
-                                        <radio id="单选框_是否女" text="滑动解锁" marginLeft='5' disable="true" />
+                                    <radiogroup id="unlockMode" orientation="horizontal" >
+                                        <text text="解锁方式：" w="auto" textStyle="bold" />
+                                        <radio id="noPd" text="无密码" checked="true" marginLeft='5' />
+                                        <radio id="digitalUnlock" text="数字解锁" marginLeft='5' />
+                                        <radio id="slideUnlock" text="滑动解锁" marginLeft='5' enabled="false" />
                                     </radiogroup>
                                     <horizontal>
-                                        <text text="私信次数:" textStyle="bold" textSize="15sp" />
-                                        <input id="输入框_私信次数" text="0" color="#666666" w="*" />
+                                        <text text="密码:" textStyle="bold" textSize="15sp" />
+                                        <input id="pd" text="" color="#666666" w="*" password="true" inputType="numberPassword" />
                                     </horizontal>
-                                    <horizontal>
-                                        <text text="私信boss间隔(秒):" textStyle="bold" textSize="15sp" />
-                                        <input id="输入框_私信boss间隔" text="2" color="#666666" w="*" />
-                                    </horizontal>
-                                    <horizontal>
-                                        <text text="进入发现boss页面等待时间(秒):" textStyle="bold" textSize="15sp" />
-                                        <input id="输入框_进入发现boss页面等待时间" text="1" color="#666666" w="*" />
-                                    </horizontal>
-                                    <horizontal>
-                                        <text text="话术:" textStyle="bold" textSize="15sp" />
-                                        <input id="输入框_boss话术" text="你好#hello#在嘛" color="#666666" w="*" />
-                                    </horizontal>
-                                    <text text="多条用#分割,随机选择一条发送" color="#D2B48C" textStyle="bold" textSize="12sp" />
-                                </vertical>
-                                <View bg="#4EBFDD" h="*" w="5" />
-                            </card>
-                            <card w="*" h="auto" margin="10 5" cardCornerRadius="2dp" cardElevation="1dp" gravity="center_vertical">
-                                <vertical padding="18 8" marginBottom="2" h="auto">
-                                    <text text="[私信访客设置]" color="#FFA500" textStyle="bold" textSize="15sp" />
-                                    <horizontal>
-                                        <text text="话术:" textStyle="bold" textSize="15sp" />
-                                        <input id="输入框_visitor话术" text="你好#hello#在嘛" color="#666666" w="*" />
-                                    </horizontal>
-                                    <text text="多条用#分割,随机选择一条发送" color="#D2B48C" textStyle="bold" textSize="12sp" />
-                                </vertical>
-                                <View bg="#4EBFDD" h="*" w="5" />
-                            </card>
-                            <card w="*" h="auto" margin="10 5" cardCornerRadius="2dp" cardElevation="1dp" gravity="center_vertical">
-                                <vertical padding="18 8" marginBottom="2" h="auto">
-                                    <text text="[抢单设置]" color="#FFA500" textStyle="bold" textSize="15sp" />
-                                    <horizontal>
-                                        <text text="每次抢单概率(%):" textStyle="bold" textSize="15sp" />
-                                        <input id="输入框_每次抢单概率" text="30" color="#666666" w="*" />
-                                    </horizontal>
-                                    <text text="(此功能概率根据个人要求设置，封号与本脚本无关)" color="#D2B48C" textStyle="bold" textSize="12sp" />
-                                    <horizontal>
-                                        <text text="抢单总次数:" textStyle="bold" textSize="15sp" />
-                                        <input id="输入框_抢单总次数" text="0" color="#666666" w="*" />
-                                    </horizontal>
-                                    <horizontal>
-                                        <text text="抢单延时(毫秒):" textStyle="bold" textSize="15sp" />
-                                        <input id="输入框_抢单延时小" text="600" color="#666666" w="80" />
-                                        <text text=" - " textStyle="bold" textSize="15sp" />
-                                        <input id="输入框_抢单延时大" text="2000" color="#666666" w="80" />
-                                    </horizontal>
+                                    <text text="暂时只支持数字解锁" color="#D2B48C" textStyle="bold" textSize="12sp" />
                                 </vertical>
                                 <View bg="#4EBFDD" h="*" w="5" />
                             </card>
                             <card id="showHide_func4" w="*" h="auto" margin="10 5" cardCornerRadius="2dp" cardElevation="1dp" gravity="center_vertical">
                                 <vertical padding="18 8" marginBottom="2" h="auto">
                                     <text text="[浏览设置]" color="#FFA500" textStyle="bold" textSize="15sp" />
-                                    <radiogroup orientation="horizontal" >
-                                        <text text="性别选择:" w="auto" textStyle="bold" />
-                                        <radio id="单选框_是否不限" text="不限" checked="true" marginLeft='5' />
-                                        <radio id="单选框_是否男" text="男" marginLeft='5' />
-                                        <radio id="单选框_是否女" text="女" marginLeft='5' />
-                                    </radiogroup>
-                                    <horizontal>
-                                        <text text="浏览轮数:" textStyle="bold" textSize="15sp" />
-                                        <input id="输入框_浏览轮数" text="10" color="#666666" w="*" />
-                                    </horizontal>
-                                    <horizontal>
-                                        <text text="浏览前多少个:" textStyle="bold" textSize="15sp" />
-                                        <input id="输入框_浏览前多少个" text="20" color="#666666" w="*" />
-                                    </horizontal>
-                                    <horizontal>
-                                        <text text="查看停留时间(秒):" textStyle="bold" textSize="15sp" />
-                                        <input id="输入框_查看停留时间小" text="1" color="#666666" w="80" />
-                                        <text text=" - " textStyle="bold" textSize="15sp" />
-                                        <input id="输入框_查看停留时间大" text="2" color="#666666" w="80" />
-                                    </horizontal>
                                     <horizontal>
                                         <text text="每轮间隔(秒):" textStyle="bold" textSize="15sp" />
                                         <input id="输入框_每轮间隔小" text="10" color="#666666" w="80" />
@@ -145,7 +81,7 @@ ui.layout(
                                 <View bg="#4EBFDD" h="*" w="5" />
                             </card>
                             <card w="*" h="auto" margin="10 5" cardCornerRadius="2dp" cardElevation="1dp" gravity="center_vertical">
-                                <button id="startScript" h="auto" text="开 始 运 行" textSize="17" textStyle="bold" color="#ffffff" bg="#4EBFDD" foreground="?selectableItemBackground" layout_gravity="bottom" />
+                                <button id="saveSettings" h="auto" text="保 存 设 置" textSize="17" textStyle="bold" color="#ffffff" bg="#4EBFDD" foreground="?selectableItemBackground" layout_gravity="bottom" />
                                 <View bg="#4EBFDD" h="*" w="5" />
                             </card>
                         </vertical>
@@ -242,6 +178,11 @@ ui.emitter.on("resume", function () {
     // 此时根据无障碍服务的开启情况，同步开关的状态
     ui.autoService.checked = auto.service != null;
     ui.floatyService.checked = floaty.checkPermission();
+
+    //启用开始运行按钮
+    if (AntForestExecution && AntForestExecution.getEngine()) {
+        ui.start.setEnabled(AntForestExecution.getEngine().isDestroyed());
+    }
 });
 
 ui.emitter.on("back_pressed", (e) => {
@@ -253,10 +194,20 @@ ui.emitter.on("back_pressed", (e) => {
     });
 })
 
-initializeRightMenu();
-initializeData();
+ui.saveSettings.click(() => {
+    let unlock = {
 
-function initializeRightMenu() {
+    }
+
+    console.log(ui.unlockMode.getCheckedRadioButtonId());
+    console.log(ui.findView(20161260).isChecked());
+})
+
+let storage = storages.create("settings.unlock");
+initLeftMenu();
+initData();
+
+function initLeftMenu() {
     ui.menu.setDataSource([
         { title: "更新日志", icon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAC8klEQVRYR82XT2sTQRjGn3cTaG8mG28eqrATEQ8NePIiFRFURCoigohWVOxORNtP0PQTmKKZHEQoRQQtUpQigmjrBxDqRbGzYj140kziLaXpjszalDSm+bOxxDkF8s7z/N5535nZIfR4UI/90RTAFvJpN4Da1zPFW8n5ZhoNAezc5wzIugngdjcAAE4S4UjBZc52Oo0BhPyuONvTpXkwfff9L0ltrY8XeNJtpPcXwMayzyrOZv8FgNGIC7lQ5OxozwBsId8ozo71EGD5teLJ410BxPKf9qLcXwpE+suxkntgpSoYyy2nQLRri8Fq9ENpfF8Qb+flK+WyE10BJIRc1KABQBvRlOJss39sIZcADNYZjCvOsgGAkC8VZ6dCAZjsLKIrAMbqBLIW4flPly22alZbePOKO6dDASSEN6yh5wB881ejKSNi9VWM6SA0JlWaZVoBJIR8UeDsTCiAjSXUBLwrcDb0p6ZeFlrf8VejcVPnViWIC2+uyJ2zoQDsnMyAMBFM1nqMNK1oC9MAYiCaUq4zZsoUtShWa1ApR5c2m1B4zxR3zoUCiN39Gov2V1K+DkwHNkR+EWhkndaWanfDdqWw83JWuex8KIDqJFssT4OsEnxdAmFYcRb0Q7UkWustuyBCmKw2qJ2TT1SaXegKoFmjmTIRIegPM3xCKQJkNwHy3mPlOhd3DKDlLsjLRwWXXQoFkMgtj2jLHECdDb8cnao2YVzImSJnl0MB2EKaI7djANL6aiGdNI0L0z+KJ0dCAXSWd+NoOy8fKpdd6x2A8B4o7twIBWALaS6frTdde8tScxl1AdDolGvHv+4kDL8C7Zi1irG7KUEr8Xb+j+fk+2KaHQrVA+0YNIsxH6SkdR+IDsPCQTXKPtbG7+hnefC+AKDS+zOxe3LIsvwh87s1QF5OQGO07YeJBU0+VXzQGpFfIdBawXXeGqNEXnrrFVy3IliIaGI/0o7XEqAaUM0gTBlqMzU69ZlXNf/vx2mYzDud8xtjzpswrqCXXwAAAABJRU5ErkJggg==" },
         { title: "检查更新", icon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADnUlEQVRYR+2WTWgcZRjHf890k6KoTQ8F6xcRRcXWj9DubKmXFLQoRCtCg1KwTYspFrzYmJ3RwzYHs7PRXvSgCW20wQ9owWDAQ6jS3NZMElqKGkKbUhE/etBCDqE2yTwy484yHbLZ2cS2F9/bzPs8//+f//O8z/sKN3nJTebnfwE1O5Ap6DOesl3gceAJgQWFCWBShG9Hs3KylrImFmDm9RDCC0BTFYLTKEOuLYeSCEkkwCxoDiUO+AfwO+AJrFe4K0Y46FryUjURVQVkHD2p8HQIpEKf4dE3aotve3ll8rrJM2gXpT3y+xvXkpalRCwpwCxoD8pbJYApPNrct6W4FKDZoy3i0Vt2RHjdzcrHlXIWFZA+rPfKPDtQPiwlXnItubOandF909FzwIPBP+ENTfH12EH5JY5xjYDNeW0SoVMImu3WcrDS6tpyohYBfklUGI/kzCoMGcr70fKVBfjHS5VPgLujRH7Nx7KyvxbyMDbt6CmB5miuwG8Ke11Lhv81B9ic12ZDOBUJPIrBd6tSDBfflL+WQx7mPJnThvrVNCO0IrwS/veUbeO2jAQCokoNYcf3WRlaCWml3IyjHQrv+fsKI2OWbJPSgMmVkj5yLTlwPchDzExe21XoDb6VLkk7+qXAyygzri1rrid5iG06OgPcDgyK6egU8BDwo2vJxhshIO3opMAjwLSYBb2M0oBSdG3ZeiMEmI76w2yL77rvwCDwInDRteT+WgXs2pW7Y9Utc40DR7rPJs01Hf0ZuA8Y9h3IojjAVUnRNNohPyUFamuzH/UMjgMbVLVroN+pegNuyWujJ/hlrw+aMJPX7SoEQ6GWPoiSBwNFtfPTfic4Ykut2HB6NpgDpqP+uX++lHh6wWDnRKdMVwKKkyucGDiab61CvFXgc6CxFNfjWpINBDz3ga7+c5YrEYBZFT7Do4jHmbF35Ey4FyefT60ZmWrMdlUiF+EeEZ5C2RvYXloLa6mf2C9z5bugqVvX1Rt8Eb37w2BJsSHsjd37bH9kB/N95rbH+HV9ebpWcz/cn/SUlnFbLgSli2elC3pAlNf8xgLqgqCIgFf32ccFdtYo4KrCDyJ85Wbl3ShnxQfJpl6tkxkerpvnStGW88stQcrg0tw05yf6ZG4xi6o+yRZLWk4TVuyRpIWLx8VFoHL4WH93R614y3JgsXIkHURxgSsS4IPt2ZNr0NTfDxw74lzzSk7qxIoFJCX6z3tgpcRh/j9lvlrSBRsylQAAAABJRU5ErkJggg==" },
@@ -294,7 +245,7 @@ function initializeRightMenu() {
 /**
  * 初始化UI和数据
  */
-function initializeData() {
+function initData() {
 }
 
 ui.start.on("click", function () {
@@ -317,9 +268,10 @@ ui.start.on("click", function () {
     main();
 });
 
+let AntForestExecution = null;
 function main() {
-    // 脚本的主逻辑
+    ui.start.setEnabled(false);
     threads.start(function () {
-        engines.execScriptFile("./AntForest.js");
+        AntForestExecution = engines.execScriptFile("./AntForest.js");
     });
 }
