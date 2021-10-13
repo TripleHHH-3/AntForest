@@ -1,4 +1,4 @@
-let SysConstant = require('./SysConstant.js');
+let SysConstant = require('../SysConstant.js');
 
 function EnergyBall() {
 }

@@ -27,7 +27,9 @@ if (max_try_times_swipe < 0) {
     exit();
 }
 
-const pd = "753684159";
+let settingsStorages = storages.create("settings");
+let unlockSetting = settingsStorages.get("unlock");
+const pd = unlockSetting.pw;
 
 for (let index = 0; index < pd.length; index++) {
     desc(pd[index]).findOne().click();

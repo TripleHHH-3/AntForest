@@ -1,6 +1,5 @@
 require('./Crack.js').unfreeze();
-let EnergyBall = require('./EnergyBall.js');
-// let SysConstant = require(path + 'SysConstant.js');
+let EnergyBall = require('./modules/EnergyBall.js');
 
 //等待无障碍权限
 auto.waitFor();

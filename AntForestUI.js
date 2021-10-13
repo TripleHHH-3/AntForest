@@ -25,10 +25,10 @@ ui.layout(
                             <horizontal gravity="center_vertical" padding="5 5">
                                 <View bg="#00BFFF" h="*" w="10"  ></View>
                                 <vertical padding="10 8" h="auto" w="0" layout_weight="1">
-                                    <text w="auto" textColor="#222222" textSize="14sp" text="待定功能1" />
-                                    <text w="auto" textColor="#999999" textSize="12sp" text="待定功能的描述" />
+                                    <text w="auto" textColor="#222222" textSize="14sp" text="固时收集能量" />
+                                    <text w="auto" textColor="#999999" textSize="12sp" text="凌晨0:00和早晨7:30" />
                                 </vertical>
-                                <checkbox id="toutiao" marginLeft="4" marginRight="6" checked="true" />
+                                <checkbox id="fixedTimeCollectEnergy" marginLeft="4" marginRight="6" checked="false" />
                             </horizontal>
 
                             <horizontal gravity="center_vertical" padding="5 5" >
@@ -122,6 +122,11 @@ ui.layout(
     </drawer>
 );
 
+let UnlockMode = require('./enum/UnlockModeEnum.js');
+let SettingConstant = require('./constant/SettingConstant');
+
+let settingsStorages = storages.create(SettingConstant.SETTINGS_STORAGE);
+
 //设置滑动页面的标题
 ui.viewpager.setTitles(["首页", "配置", "说明"]);
 //让滑动页面和标签栏联动
@@ -159,17 +164,51 @@ ui.autoService.on("check", function (checked) {
     }
 });
 
+let functionStorage = storages.create("function");
+
+ui.fixedTimeCollectEnergy.on("check", (checked) => {
+
+    if (checked) {
+        deleteFixedTimeTask();
+
+        let earlyMorningTask = $timers.addDailyTask({
+            path: files.cwd() + "modules/UnlockCollect.js",
+            time: new Date(0, 0, 0, 0, 0, 0)
+        });
+
+        let morningTask = $timers.addDailyTask({
+            path: files.cwd() + "modules/UnlockCollect.js",
+            time: new Date(0, 0, 0, 7, 30, 0)
+        });
+
+        functionStorage.put("earlyMorningTask", earlyMorningTask.id);
+        functionStorage.put("morningTask", morningTask.id);
+    } else {
+        deleteFixedTimeTask();
+    }
+})
+
+function deleteFixedTimeTask() {
+    let earlyMorningTaskId = functionStorage.get("earlyMorningTask");
+    let morningTaskId = functionStorage.get("morningTask");
+
+    if (earlyMorningTaskId != undefined) {
+        $timers.removeTimedTask(functionStorage.get("earlyMorningTask"));
+    }
+
+    if (morningTaskId != undefined) {
+        $timers.removeTimedTask(functionStorage.get("morningTask"));
+    }
+}
+
 // 用户勾选悬浮窗的选项时，跳转到页面让用户去开启
 ui.floatyService.on("check", function (checked) {
-    if (checked && !floaty.checkPermission()) {
+    if ((checked && !floaty.checkPermission()) || (!checked && floaty.checkPermission())) {
         app.startActivity({
             packageName: "com.android.settings",
             className: "com.android.settings.Settings$AppDrawOverlaySettingsActivity",
             data: "package:" + context.getPackageName(),
         });
-    }
-    if (!checked && floaty.checkPermission()) {
-        ui.floatyService.checked = true;
     }
 });
 
@@ -177,6 +216,7 @@ ui.floatyService.on("check", function (checked) {
 ui.emitter.on("resume", function () {
     // 此时根据无障碍服务的开启情况，同步开关的状态
     ui.autoService.checked = auto.service != null;
+    //同步悬浮窗权限按钮
     ui.floatyService.checked = floaty.checkPermission();
 
     //启用开始运行按钮
@@ -185,25 +225,47 @@ ui.emitter.on("resume", function () {
     }
 });
 
-ui.emitter.on("back_pressed", (e) => {
-    e.consumed = true;
-    dialogs.confirm("是否退出？").then((result) => {
-        if (result) {
-            ui.finish();
-        }
+//两次才能返回
+threads.start(function () {
+    var isCanFinish = false;
+    var isCanFinishTimeout;
+    ui.emitter.on("back_pressed", e => {
+        if (!isCanFinish) {
+            isCanFinish = true;
+            isCanFinishTimeout = setTimeout(() => {
+                toast("再按一次退出应用");
+                isCanFinish = false;
+            }, 500);
+            e.consumed = true;
+        } else {
+            clearTimeout(isCanFinishTimeout);
+            e.consumed = false;
+        };
     });
-})
+
+    setInterval(() => { }, 5000)
+});
 
 ui.saveSettings.click(() => {
-    let unlock = {
-
+    let unlockSetting = {
+        unlockMode: null,
+        pw: null
     }
 
-    console.log(ui.unlockMode.getCheckedRadioButtonId());
-    console.log(ui.findView(20161260).isChecked());
+    switch (ui.unlockMode.getCheckedRadioButtonId()) {
+        case ui.noPd.getId():
+            unlockSetting.unlockMode = UnlockMode.NO_PD;
+            break;
+        case ui.digitalUnlock.getId():
+            unlockSetting.unlockMode = UnlockMode.DIGITAL_UNLOCK;
+            break;
+    }
+
+    unlockSetting.pw = ui.pd.getText();
+
+    settingsStorages.put(SettingConstant.UNLOCK_SETTING, unlockSetting);
 })
 
-let storage = storages.create("settings.unlock");
 initLeftMenu();
 initData();
 
