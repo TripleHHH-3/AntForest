@@ -1,41 +1,23 @@
-device.wakeUpIfNeeded();
-sleep(500)
+// log($timers.addDailyTask({
+//     path: files.cwd() + "/Test.js",
+//     time: new Date(0, 0, 0, 19, 59, 0),
+// }));
 
-let keyguard_manager = context.getSystemService(context.KEYGUARD_SERVICE);
-//滑动时间
-let swipe_time = 0;
-//滑动自增时间
-let swipe_time_increment = 60;
-//最大尝试滑动次数
-let max_try_times_swipe = 20;
+// log($timers.addDisposableTask({
+//     path: files.cwd() + "/Test.js",
+//     date: new Date(2021, 10, 14, 19, 17, 0),
+//     scheduled: true
+// }));
 
-while (keyguard_manager.isKeyguardLocked() && max_try_times_swipe--) {
+let tasks =$timers.queryTimedTasks({})
 
-    swipe_time += swipe_time_increment;
 
-    swipe(device.width / 2, device.height * 0.9, device.width / 2, device.height * 0.1, swipe_time);
+tasks.forEach(t => {
+    console.log("删除: ", t);
+    // log($timers.removeTimedTask(t.id));
+});
 
-    sleep(500);
-
-    if (desc("0").findOne(500)) {
-        break;
-    }
-}
-
-if (max_try_times_swipe < 0) {
-    log("解锁失败！");
-    exit();
-}
-
-let settingsStorages = storages.create("settings");
-let unlockSetting = settingsStorages.get("unlock");
-const pd = unlockSetting.pw;
-
-for (let index = 0; index < pd.length; index++) {
-    desc(pd[index]).findOne().click();
-}
-
-if (keyguard_manager.isKeyguardLocked()) {
-    log("密码不正确！");
-    exit();
-}
+// let a = $timers.getTimedTask(15);
+// console.log(a);
+// a.scheduled = true
+// a.start();

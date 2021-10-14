@@ -56,13 +56,13 @@ ui.layout(
                                     <text text="[解锁设置]" color="#FFA500" textStyle="bold" textSize="15sp" />
                                     <radiogroup id="unlockMode" orientation="horizontal" >
                                         <text text="解锁方式：" w="auto" textStyle="bold" />
-                                        <radio id="noPd" text="无密码" checked="true" marginLeft='5' />
+                                        <radio id="noPw" text="无密码" checked="true" marginLeft='5' />
                                         <radio id="digitalUnlock" text="数字解锁" marginLeft='5' />
                                         <radio id="slideUnlock" text="滑动解锁" marginLeft='5' enabled="false" />
                                     </radiogroup>
                                     <horizontal>
                                         <text text="密码:" textStyle="bold" textSize="15sp" />
-                                        <input id="pd" text="" color="#666666" w="*" password="true" inputType="numberPassword" />
+                                        <input id="pw" text="" color="#666666" w="*" password="true" inputType="numberPassword" />
                                     </horizontal>
                                     <text text="暂时只支持数字解锁" color="#D2B48C" textStyle="bold" textSize="12sp" />
                                 </vertical>
@@ -172,12 +172,12 @@ ui.fixedTimeCollectEnergy.on("check", (checked) => {
         deleteFixedTimeTask();
 
         let earlyMorningTask = $timers.addDailyTask({
-            path: files.cwd() + "modules/UnlockCollect.js",
+            path: files.cwd() + "/modules/UnlockCollect.js",
             time: new Date(0, 0, 0, 0, 0, 0)
         });
 
         let morningTask = $timers.addDailyTask({
-            path: files.cwd() + "modules/UnlockCollect.js",
+            path: files.cwd() + "/modules/UnlockCollect.js",
             time: new Date(0, 0, 0, 7, 30, 0)
         });
 
@@ -253,15 +253,15 @@ ui.saveSettings.click(() => {
     }
 
     switch (ui.unlockMode.getCheckedRadioButtonId()) {
-        case ui.noPd.getId():
-            unlockSetting.unlockMode = UnlockMode.NO_PD;
+        case ui.noPw.getId():
+            unlockSetting.unlockMode = UnlockMode.NO_PW;
             break;
         case ui.digitalUnlock.getId():
             unlockSetting.unlockMode = UnlockMode.DIGITAL_UNLOCK;
             break;
     }
 
-    unlockSetting.pw = ui.pd.getText();
+    unlockSetting.pw = ui.pw.getText();
 
     settingsStorages.put(SettingConstant.UNLOCK_SETTING, unlockSetting);
 })
@@ -308,6 +308,28 @@ function initLeftMenu() {
  * 初始化UI和数据
  */
 function initData() {
+    if (functionStorage.get("earlyMorningTask") != null) {
+        ui.fixedTimeCollectEnergy.setChecked(true)
+    }
+
+    let unlockSetting = settingsStorages.get(SettingConstant.UNLOCK_SETTING);
+    if (unlockSetting) {
+        if (unlockSetting.unlockMode) {
+            switch (unlockSetting.unlockMode) {
+                case UnlockMode.NO_PW:
+                    ui.noPw.setChecked(true);
+                    break;
+                case UnlockMode.DIGITAL_UNLOCK:
+                    ui.digitalUnlock.setChecked(true);
+                    break;
+            }
+        }
+
+        if (unlockSetting.pw) {
+            ui.pw.setText(unlockSetting.pw);
+        }
+    }
+
 }
 
 ui.start.on("click", function () {

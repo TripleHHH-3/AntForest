@@ -24,7 +24,7 @@ while (keyguard_manager.isKeyguardLocked() && max_try_times_swipe--) {
     sleep(500);
 
 
-    if (unlockSetting.unlockMode == UnlockMode.NO_PD) {
+    if (unlockSetting.unlockMode == UnlockMode.NO_PW) {
         if (!keyguard_manager.isKeyguardLocked()) {
             break;
         }

@@ -1,5 +1,5 @@
 let UnlockMode = {
-    NO_PD: 0,
+    NO_PW: 0,
     DIGITAL_UNLOCK: 1
 }
 
