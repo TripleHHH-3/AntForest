@@ -15,3 +15,14 @@ Crack.unfreeze = function () {
 }
 
 module.exports = Crack;
+
+
+// //禁止音量键调节音量
+// events.setKeyInterceptionEnabled("volume_up", true);
+// //开启按键监听
+// events.observeKey();
+// //设置监听
+// events.onKeyDown("volume_up", () => {
+//     toastLog("脚本停止");
+//     exit();
+// })

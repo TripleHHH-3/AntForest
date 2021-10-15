@@ -52,20 +52,7 @@ ui.layout(
                     <ScrollView>
                         <vertical marginTop="5">
                             <card w="*" h="auto" margin="10 5" cardCornerRadius="2dp" cardElevation="1dp" gravity="center_vertical">
-                                <vertical padding="18 8" marginBottom="2" h="auto">
-                                    <text text="[解锁设置]" color="#FFA500" textStyle="bold" textSize="15sp" />
-                                    <radiogroup id="unlockMode" orientation="horizontal" >
-                                        <text text="解锁方式：" w="auto" textStyle="bold" />
-                                        <radio id="noPw" text="无密码" checked="true" marginLeft='5' />
-                                        <radio id="digitalUnlock" text="数字解锁" marginLeft='5' />
-                                        <radio id="slideUnlock" text="滑动解锁" marginLeft='5' enabled="false" />
-                                    </radiogroup>
-                                    <horizontal>
-                                        <text text="密码:" textStyle="bold" textSize="15sp" />
-                                        <input id="pw" text="" color="#666666" w="*" password="true" inputType="numberPassword" />
-                                    </horizontal>
-                                    <text text="暂时只支持数字解锁" color="#D2B48C" textStyle="bold" textSize="12sp" />
-                                </vertical>
+                                <button id="unlockSetting" text="解锁设置" style="Widget.AppCompat.Button.Borderless.Colored" w="*" />
                                 <View bg="#4EBFDD" h="*" w="5" />
                             </card>
                             <card id="showHide_func4" w="*" h="auto" margin="10 5" cardCornerRadius="2dp" cardElevation="1dp" gravity="center_vertical">
@@ -78,10 +65,6 @@ ui.layout(
                                         <input id="输入框_每轮间隔大" text="20" color="#666666" w="80" />
                                     </horizontal>
                                 </vertical>
-                                <View bg="#4EBFDD" h="*" w="5" />
-                            </card>
-                            <card w="*" h="auto" margin="10 5" cardCornerRadius="2dp" cardElevation="1dp" gravity="center_vertical">
-                                <button id="saveSettings" h="auto" text="保 存 设 置" textSize="17" textStyle="bold" color="#ffffff" bg="#4EBFDD" foreground="?selectableItemBackground" layout_gravity="bottom" />
                                 <View bg="#4EBFDD" h="*" w="5" />
                             </card>
                         </vertical>
@@ -122,152 +105,13 @@ ui.layout(
     </drawer>
 );
 
-let UnlockMode = require('./enum/UnlockModeEnum.js');
-let SettingConstant = require('./constant/SettingConstant');
-
-let settingsStorages = storages.create(SettingConstant.SETTINGS_STORAGE);
-
-//设置滑动页面的标题
-ui.viewpager.setTitles(["首页", "配置", "说明"]);
-//让滑动页面和标签栏联动
-ui.tabs.setupWithViewPager(ui.viewpager);
-activity.setSupportActionBar(ui.toolbar);
-
-//创建选项菜单(右上角)
-ui.emitter.on("create_options_menu", menu => {
-    menu.add("运行日志");
-    menu.add("关于");
-});
-
-//监听选项菜单点击
-ui.emitter.on("options_item_selected", (e, item) => {
-    switch (item.getTitle()) {
-        case "运行日志":
-            app.startActivity("console");
-            break;
-        case "关于":
-            alert("关于", "仅供娱乐");
-            break;
-    }
-    e.consumed = true;
-});
-
-// 用户勾选无障碍服务的选项时，跳转到页面让用户去开启
-ui.autoService.on("check", function (checked) {
-    if (checked && auto.service == null) {
-        app.startActivity({
-            action: "android.settings.ACCESSIBILITY_SETTINGS"
-        });
-    }
-    if (!checked && auto.service != null) {
-        auto.service.disableSelf();
-    }
-});
-
 let functionStorage = storages.create("function");
-
-ui.fixedTimeCollectEnergy.on("check", (checked) => {
-
-    if (checked) {
-        deleteFixedTimeTask();
-
-        let earlyMorningTask = $timers.addDailyTask({
-            path: files.cwd() + "/modules/UnlockCollect.js",
-            time: new Date(0, 0, 0, 0, 0, 0)
-        });
-
-        let morningTask = $timers.addDailyTask({
-            path: files.cwd() + "/modules/UnlockCollect.js",
-            time: new Date(0, 0, 0, 7, 30, 0)
-        });
-
-        functionStorage.put("earlyMorningTask", earlyMorningTask.id);
-        functionStorage.put("morningTask", morningTask.id);
-    } else {
-        deleteFixedTimeTask();
-    }
-})
-
-function deleteFixedTimeTask() {
-    let earlyMorningTaskId = functionStorage.get("earlyMorningTask");
-    let morningTaskId = functionStorage.get("morningTask");
-
-    if (earlyMorningTaskId != undefined) {
-        $timers.removeTimedTask(functionStorage.get("earlyMorningTask"));
-    }
-
-    if (morningTaskId != undefined) {
-        $timers.removeTimedTask(functionStorage.get("morningTask"));
-    }
-}
-
-// 用户勾选悬浮窗的选项时，跳转到页面让用户去开启
-ui.floatyService.on("check", function (checked) {
-    if ((checked && !floaty.checkPermission()) || (!checked && floaty.checkPermission())) {
-        app.startActivity({
-            packageName: "com.android.settings",
-            className: "com.android.settings.Settings$AppDrawOverlaySettingsActivity",
-            data: "package:" + context.getPackageName(),
-        });
-    }
-});
-
-// 当用户回到本界面时，resume事件会被触发
-ui.emitter.on("resume", function () {
-    // 此时根据无障碍服务的开启情况，同步开关的状态
-    ui.autoService.checked = auto.service != null;
-    //同步悬浮窗权限按钮
-    ui.floatyService.checked = floaty.checkPermission();
-
-    //启用开始运行按钮
-    if (AntForestExecution && AntForestExecution.getEngine()) {
-        ui.start.setEnabled(AntForestExecution.getEngine().isDestroyed());
-    }
-});
-
-//两次才能返回
-threads.start(function () {
-    var isCanFinish = false;
-    var isCanFinishTimeout;
-    ui.emitter.on("back_pressed", e => {
-        if (!isCanFinish) {
-            isCanFinish = true;
-            isCanFinishTimeout = setTimeout(() => {
-                toast("再按一次退出应用");
-                isCanFinish = false;
-            }, 500);
-            e.consumed = true;
-        } else {
-            clearTimeout(isCanFinishTimeout);
-            e.consumed = false;
-        };
-    });
-
-    setInterval(() => { }, 5000)
-});
-
-ui.saveSettings.click(() => {
-    let unlockSetting = {
-        unlockMode: null,
-        pw: null
-    }
-
-    switch (ui.unlockMode.getCheckedRadioButtonId()) {
-        case ui.noPw.getId():
-            unlockSetting.unlockMode = UnlockMode.NO_PW;
-            break;
-        case ui.digitalUnlock.getId():
-            unlockSetting.unlockMode = UnlockMode.DIGITAL_UNLOCK;
-            break;
-    }
-
-    unlockSetting.pw = ui.pw.getText();
-
-    settingsStorages.put(SettingConstant.UNLOCK_SETTING, unlockSetting);
-})
+let AntForestExecution = null;
 
 initLeftMenu();
 initData();
+initMonitor();
+initAction();
 
 function initLeftMenu() {
     ui.menu.setDataSource([
@@ -308,54 +152,154 @@ function initLeftMenu() {
  * 初始化UI和数据
  */
 function initData() {
+    //设置滑动页面的标题
+    ui.viewpager.setTitles(["首页", "配置", "说明"]);
+    //让滑动页面和标签栏联动
+    ui.tabs.setupWithViewPager(ui.viewpager);
+    activity.setSupportActionBar(ui.toolbar);
+
+    //创建选项菜单(右上角)
+    ui.emitter.on("create_options_menu", menu => {
+        menu.add("运行日志");
+        menu.add("关于");
+    });
+
     if (functionStorage.get("earlyMorningTask") != null) {
         ui.fixedTimeCollectEnergy.setChecked(true)
     }
-
-    let unlockSetting = settingsStorages.get(SettingConstant.UNLOCK_SETTING);
-    if (unlockSetting) {
-        if (unlockSetting.unlockMode) {
-            switch (unlockSetting.unlockMode) {
-                case UnlockMode.NO_PW:
-                    ui.noPw.setChecked(true);
-                    break;
-                case UnlockMode.DIGITAL_UNLOCK:
-                    ui.digitalUnlock.setChecked(true);
-                    break;
-            }
-        }
-
-        if (unlockSetting.pw) {
-            ui.pw.setText(unlockSetting.pw);
-        }
-    }
-
 }
 
-ui.start.on("click", function () {
-    //程序开始运行之前判断无障碍服务
-    if (auto.service == null) {
-        toast("请先开启无障碍服务！");
-        return;
-    }
+function initMonitor() {
+    //监听选项菜单点击
+    ui.emitter.on("options_item_selected", (e, item) => {
+        switch (item.getTitle()) {
+            case "运行日志":
+                app.startActivity("console");
+                break;
+            case "关于":
+                alert("关于", "仅供娱乐");
+                break;
+        }
+        e.consumed = true;
+    });
 
-    // //禁止音量键调节音量
-    // events.setKeyInterceptionEnabled("volume_up", true);
-    // //开启按键监听
-    // events.observeKey();
-    // //设置监听
-    // events.onKeyDown("volume_up", () => {
-    //     toastLog("脚本停止");
-    //     exit();
-    // })
+    // 当用户回到本界面时，resume事件会被触发
+    ui.emitter.on("resume", function () {
+        // 此时根据无障碍服务的开启情况，同步开关的状态
+        ui.autoService.checked = auto.service != null;
+        //同步悬浮窗权限按钮
+        ui.floatyService.checked = floaty.checkPermission();
 
-    main();
-});
-
-let AntForestExecution = null;
-function main() {
-    ui.start.setEnabled(false);
-    threads.start(function () {
-        AntForestExecution = engines.execScriptFile("./AntForest.js");
+        //启用开始运行按钮
+        if (AntForestExecution && AntForestExecution.getEngine()) {
+            ui.start.setEnabled(AntForestExecution.getEngine().isDestroyed());
+        }
     });
 }
+
+function initAction() {
+    // 用户勾选无障碍服务的选项时，跳转到页面让用户去开启
+    ui.autoService.on("check", function (checked) {
+        if (checked && auto.service == null) {
+            app.startActivity({
+                action: "android.settings.ACCESSIBILITY_SETTINGS"
+            });
+        }
+        if (!checked && auto.service != null) {
+            auto.service.disableSelf();
+        }
+    });
+
+    // 用户勾选悬浮窗的选项时，跳转到页面让用户去开启
+    ui.floatyService.on("check", function (checked) {
+        if ((checked && !floaty.checkPermission()) || (!checked && floaty.checkPermission())) {
+            app.startActivity({
+                packageName: "com.android.settings",
+                className: "com.android.settings.Settings$AppDrawOverlaySettingsActivity",
+                data: "package:" + context.getPackageName(),
+            });
+        }
+    });
+
+    //#region 开始脚本按钮
+    ui.start.on("click", function () {
+        //程序开始运行之前判断无障碍服务
+        if (auto.service == null) {
+            toast("请先开启无障碍服务！");
+            return;
+        }
+
+        //禁止按钮
+        ui.start.setEnabled(false);
+
+        toast("脚本启动中···")
+
+        //开启脚本
+        threads.start(function () {
+            AntForestExecution = engines.execScriptFile("./AntForest.js");
+        });
+    });
+    //#endregion
+
+    //#region 固时收集
+    ui.fixedTimeCollectEnergy.on("check", (checked) => {
+
+        if (checked) {
+            deleteFixedTimeTask();
+
+            let earlyMorningTask = $timers.addDailyTask({
+                path: files.cwd() + "/modules/UnlockCollect.js",
+                time: "0:00"
+            });
+
+            let morningTask = $timers.addDailyTask({
+                path: files.cwd() + "/modules/UnlockCollect.js",
+                time: "7:30"
+            });
+
+            functionStorage.put("earlyMorningTask", earlyMorningTask.id);
+            functionStorage.put("morningTask", morningTask.id);
+        } else {
+            deleteFixedTimeTask();
+        }
+    })
+
+    function deleteFixedTimeTask() {
+        let earlyMorningTaskId = functionStorage.get("earlyMorningTask");
+        let morningTaskId = functionStorage.get("morningTask");
+
+        if (earlyMorningTaskId != undefined) {
+            $timers.removeTimedTask(functionStorage.get("earlyMorningTask"));
+        }
+
+        if (morningTaskId != undefined) {
+            $timers.removeTimedTask(functionStorage.get("morningTask"));
+        }
+    }
+    //#endregion
+
+    ui.unlockSetting.click(() => {
+        engines.execScriptFile("./ui/ui-unlock.js", { path: "./ui/" });
+    })
+}
+
+//两次才能返回
+threads.start(function () {
+    var isCanFinish = false;
+    var isCanFinishTimeout;
+    ui.emitter.on("back_pressed", e => {
+        if (!isCanFinish) {
+            isCanFinish = true;
+            isCanFinishTimeout = setTimeout(() => {
+                toast("再按一次退出应用");
+                isCanFinish = false;
+            }, 800);
+            e.consumed = true;
+        } else {
+            clearTimeout(isCanFinishTimeout);
+            e.consumed = false;
+        };
+    });
+
+    setInterval(() => { }, 5000)
+});

@@ -3,11 +3,10 @@
 //     time: new Date(0, 0, 0, 19, 59, 0),
 // }));
 
-// log($timers.addDisposableTask({
-//     path: files.cwd() + "/Test.js",
-//     date: new Date(2021, 10, 14, 19, 17, 0),
-//     scheduled: true
-// }));
+log($timers.addDisposableTask({
+    path: files.cwd() + "/Test.js",
+    date: new Date(2021, 10, 14, 20, 15, 0)
+}));
 
 let tasks =$timers.queryTimedTasks({})
 
