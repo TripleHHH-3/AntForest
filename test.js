@@ -1,7 +1,11 @@
+// let a = null;
+// let b = undefined;
 
-let keyguard_manager = context.getSystemService(context.KEYGUARD_SERVICE);
-console.log(keyguard_manager.isKeyguardLocked());
+// console.log(a != null);
+// console.log(b != null);
+// console.log(a != undefined);
+// console.log(b != undefined);
+let functionStorage = storages.create("function");
+let fixedTimeCollectEnergy = functionStorage.get("fixedTimeCollectEnergy");
 
-setInterval(() => {
-    console.log(keyguard_manager.isKeyguardLocked());
-}, 1000)
+console.log(fixedTimeCollectEnergy);

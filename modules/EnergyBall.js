@@ -10,7 +10,6 @@ EnergyBall.REGION_H = SysConstant.DEVICE_HEIGHT * 0.3;
 
 /**
  * 找到能量球
- * @returns 每个能量球的坐标
  */
 EnergyBall.findEnergyBall = function () {
     // 截图

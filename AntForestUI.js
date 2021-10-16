@@ -34,10 +34,10 @@ ui.layout(
                             <horizontal gravity="center_vertical" padding="5 5" >
                                 <View bg="#00FFFF" h="*" w="10"  ></View>
                                 <vertical padding="10 8" h="auto" w="0" layout_weight="1">
-                                    <text w="auto" textColor="#222222" textSize="14sp" text="待定功能2" />
-                                    <text w="auto" textColor="#999999" textSize="12sp" text="待定功能1的描述" />
+                                    <text w="auto" textColor="#222222" textSize="14sp" text="定时收集能量" />
+                                    <text w="auto" textColor="#999999" textSize="12sp" text="时间间隔可以去隔壁设置" />
                                 </vertical>
-                                <checkbox id="douyin" marginLeft="4" marginRight="6" checked="false" />
+                                <checkbox id="TimingCollectEnergy" marginLeft="4" marginRight="6" checked="false" />
                             </horizontal>
 
                             <horizontal gravity="right">
@@ -105,7 +105,9 @@ ui.layout(
     </drawer>
 );
 
-let functionStorage = storages.create("function");
+let FunctionConstant = require('./constant/FunctionConstant.js');
+
+let functionStorage = storages.create(FunctionConstant.FUNCTION);
 let AntForestExecution = null;
 
 initLeftMenu();
@@ -164,9 +166,12 @@ function initData() {
         menu.add("关于");
     });
 
-    if (functionStorage.get("earlyMorningTask") != null) {
-        ui.fixedTimeCollectEnergy.setChecked(true)
+    //#region 固时收集
+    let fixedTimeCollectEnergy = functionStorage.get(FunctionConstant.FIXED_TIME_COLLECT_ENERGY)
+    if (fixedTimeCollectEnergy != null) {
+        ui.fixedTimeCollectEnergy.setChecked(fixedTimeCollectEnergy.enabled)
     }
+    //#endregion
 }
 
 function initMonitor() {
@@ -245,7 +250,7 @@ function initAction() {
     ui.fixedTimeCollectEnergy.on("check", (checked) => {
 
         if (checked) {
-            deleteFixedTimeTask();
+            cancelFixedTimeTask();
 
             let earlyMorningTask = $timers.addDailyTask({
                 path: files.cwd() + "/AntForest.js",
@@ -257,25 +262,40 @@ function initAction() {
                 time: "7:30"
             });
 
-            functionStorage.put("earlyMorningTask", earlyMorningTask.id);
-            functionStorage.put("morningTask", morningTask.id);
+            let fixedTimeCollectEnergy = {
+                enabled: true,
+                earlyMorningTaskId: earlyMorningTask.id,
+                morningTaskId: morningTask.id
+            }
+
+            functionStorage.put(FunctionConstant.FIXED_TIME_COLLECT_ENERGY, fixedTimeCollectEnergy);
         } else {
-            deleteFixedTimeTask();
+            cancelFixedTimeTask();
+        }
+
+        function cancelFixedTimeTask() {
+            let fixedTimeCollectEnergy = functionStorage.get(FunctionConstant.FIXED_TIME_COLLECT_ENERGY);
+            console.log(fixedTimeCollectEnergy);
+            console.log(fixedTimeCollectEnergy.earlyMorningTaskId);
+            if (fixedTimeCollectEnergy != null) {
+                if (fixedTimeCollectEnergy.earlyMorningTaskId != null) {
+                    $timers.removeTimedTask(fixedTimeCollectEnergy.earlyMorningTaskId);
+                }
+
+                if (fixedTimeCollectEnergy.morningTaskId != null) {
+                    $timers.removeTimedTask(fixedTimeCollectEnergy.morningTaskId);
+                }
+
+                fixedTimeCollectEnergy = {
+                    enabled: false,
+                    earlyMorningTaskId: null,
+                    morningTaskId: null
+                }
+
+                functionStorage.put(FunctionConstant.FIXED_TIME_COLLECT_ENERGY, fixedTimeCollectEnergy);
+            }
         }
     })
-
-    function deleteFixedTimeTask() {
-        let earlyMorningTaskId = functionStorage.get("earlyMorningTask");
-        let morningTaskId = functionStorage.get("morningTask");
-
-        if (earlyMorningTaskId != undefined) {
-            $timers.removeTimedTask(functionStorage.get("earlyMorningTask"));
-        }
-
-        if (morningTaskId != undefined) {
-            $timers.removeTimedTask(functionStorage.get("morningTask"));
-        }
-    }
     //#endregion
 
     ui.unlockSetting.click(() => {
