@@ -37,7 +37,7 @@ ui.layout(
                                     <text w="auto" textColor="#222222" textSize="14sp" text="定时收集能量" />
                                     <text w="auto" textColor="#999999" textSize="12sp" text="时间间隔可以去隔壁设置" />
                                 </vertical>
-                                <checkbox id="TimingCollectEnergy" marginLeft="4" marginRight="6" checked="false" />
+                                <checkbox id="timingCollectEnergy" marginLeft="4" marginRight="6" checked="false" />
                             </horizontal>
 
                             <horizontal gravity="right">
@@ -110,8 +110,8 @@ let FunctionConstant = require('./constant/FunctionConstant.js');
 let functionStorage = storages.create(FunctionConstant.FUNCTION);
 let AntForestExecution = null;
 
-initLeftMenu();
 initData();
+initLeftMenu();
 initMonitor();
 initAction();
 
@@ -123,16 +123,17 @@ function initLeftMenu() {
         { title: "关于", icon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAE3ElEQVRYR61Xa4hUZRh+3jOrK1G7M2fGtIug654xS1IqSIpCKKlMtCL3RyCx5YU940oKJmSQCxoUhOU232Sp+K/UH1mkGRiKGV0oumDFzhnTMipx58xgCO26c574zjmj42Vmzkrn38z3vO/7fO/9E0T8EluOtRuet4DkQoF0EEgBkgzEWRRgkEBePG+nnOWBwbW3/BNFtTQDJbP56RDpJfAUgPZm+PC8JMB7IPuLmfQvjWQaEkjk8huE0gugLVRyBsAXAhwmcYpi/K3/F3oTRTCB4D0QmQtibBVPYX+pJ/1iPRJ1CZjK2QVgkS8o8qlHbi6nhvaja8Zwoxu1bT1pxoaHngS4TIA7wxB95trp+68kd0UCpiocBzg5FFjq2tbWiK6/CJZQhWUCbglJDLp2evylei4jYKr8aUBSfmohNrNkd/x4NcarMglVeETAfcFvOeHanVNq9V1EwFT5w4DcpwGubTVN0NEQM5XDEL/bta2uqux5I2HCrQtuLvNKdufHUQyYbzm3soI59PBzudc6VE8moX69XVD5wdcv3FhNTJ+ALjWKfBlme+SYj88evbYirVruNt8wvT43M219PRKmcpYAeAfAGSFn6xINCChHEejR2e72dD4Y5eYaE+935hgxHLyAp+va6bA5XVmLmSscAPmAALmibdk+AVM5vwOY5AELy7b1YVQC120ZSI2pGKfP40V2uD2d3Y3k48pZYAAfAPjTta2bJJ49PsuQke8AlN1TQxPQ17jOL1VuKmeRAIsJDrh2ek1T8ruOjjUHWzXpNhHvbknmCitJvkHInpLd+XhTBf8DwFTOfgAPgVgtZtbZBsEzAqwr2tbLo9Xf/qZzhxBtjSrgUp1J5bxAYCOI7WIq5wiAe0EscTPWtqgEJuQK1w97XAXBKgFam1VArV4z6zwLge6un2sCOh4pwphfsqfujUIgofKbBaJ7+8wafJdrW7ujyR97VOB9BGBw1AT8IUW2VCqyJtaCQtWgERtz4+DyyX+NhgCJ01cdgnY10BGDcSzonPi2ZFt3RTHul30YAgKHrjoJE+q8G5t2wHpJSELpMlxBsh/gXtdOz496i4QqrBHw1aAFjy6Bq2UoZLfoYQIPP0EwPDJm3A1nlkxyo5Aws/m9EJnnYwUPuz3WJ4lcYQb/jf1RXjWlXFdHTSPyZGRKtRUf1QOFkOUlu/PtSASUcw5AS0BAdoDeOAF3Fu1pexrJJ9XAY4TxPsiv3Ex6djgNC+so3BA1mXQPOEeeqjVEcm0pkw5CUueLbzoeN1pH9PCaVb1s4IHNThtaoMfq9CheiGfzswwRrSgOcICM9ZUyU99t5jlTOZsAPFd70ZqFxOkRQgU51Xwh0aNYY6O2YFPluwHZ7keM7C5m0juC9Kn5ajfh/3MlM5UzG4AeQPpdsdW1raVVs5cvpVnnJAQ3R/VEM7fr84RyDgqgPfa158W6yis6fqtLIBT45sJOj9e9oZa+hqXVhIWZHVgPMV4KLsX+kp1e2ZCAPkzmCq+QfD4Efi/w+oqpc/uaPUzqcTGVsxrAa+H5bncEi7HSGmq4eiez+Sc8kd7QfVr2sqcZK97ZKGHwE67Fmyg0gmohj1SET0fa/f1tVtAFYm5UY1Fw/jCKAqxizGxhkgALabCDREpEkiSvGY2OWqyInPgPdzcwBtuCmgYAAAAASUVORK5CYII=" },
         { title: "退出", icon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADd0lEQVRYR+2XS4hcRRSGv7o9pnHR4/TtnoVBhJDUBE2UiLrxEaISV+LCx+DaxBiqJxGi4iNrxQhGzKTLCYLiwoWOsxIRA5r4wo34IFEmXRnduFFmqmOycYaZKqmem9jT3u7b3bZkY8GFpuucU9/969SpcwWXeYjLvD59A8TarAR4W168kvGtS/2+yL8B8AlA/j8DKGmjF5RUaW8Xa9MRoKhrR+pqbH+WMqkKFI/NXcuKe1vADqtkqk1Jmz895G15MVWBBPBjrmC3fUz+2g4kNXiszSfA3UDNKrk5zbkLgNPAFuBTq+Q9XQMUtXlGwEvABbfC/ef2yZN9AUyZ63G8FyA8PFtX8lBanDUKjFR/2RaJ5c+BAvhHrRp7qx15lgLBb+R1c1PkCfG880Pbz1U2fN8abw1ArM0rwAFg2io53imBugEI/iVtnvPwInDYKvlkW4Dhw6fjofy6UwixPoqiW+f3bvxmEAAhRlyt/QzklxeXbjh/YKttjntJgWLVKCGoAu9aJR/JOj7dKtAA0OYNYLf3VOoVqVMBYl07BmKPJ7qvrjZ+OEiAkUmzI8pxAs+btiJ3pSugzYlw7kVu6LqFxzfMZgFkFaJm//LRuTEXuTPAV1bJO9ptwe9CMBrlR4bnd41eGCjAodmCK+TOA/NWydE2W2CCQYFlrrL7ZfjdccTaLCZ3QSHrLoiPmGGG+CPUFqvkcDuAINEYEVvsXvlTFkAv8/FqUfoxrbL+fQqSHADGrZLTvSyQZVuq1h7wQsx4OFlX8q5UBUraVDwc7aYIZS3YOl+smkkhmBBwcEHJUJQujSYFZm8U5H5ozDhusxPy614XSrNP9v8zYFtagWstxe8DDw5ShVjXXgbxNDBjlXyoFXINQFGfuVMQhcsDvHjKVjaFu6HvEU/VduLE8UY43Pa62vxFR4AwGToZgdjXOGJtmpFuiS4Wq3AZ1ZU8mOaX3hFpYwRsShx6PhWxNg9DoxcI4x/VLzUJW+libb4Ebk/+n8bxalZilvXZmx1uT7hTVmXnbF1J2Umxjl1xUZsXBDzfFOAjL3hHCL5jidU+bx3X4BqtV3jr8KymEH6y76a0mThJzCeS09HN9s943GtpCdd1DqQZlqfmbvHO3etgp4D1wNWAEILfvG88H+Q8x+cn5LfdUF606fvDpJdF+s6BQS3yP0AnBf4C4vh6MKas2UAAAAAASUVORK5CYII=" }
     ]);
+
     ui.menu.on("item_click", item => {
         switch (item.title) {
             case "更新日志":
-                alert("待完善···");
+                toast("待完善···");
                 break;
             case "检查更新":
-                alert("待完善···");
+                toast("待完善···");
                 break;
             case "教程":
-                alert("待完善···");
+                toast("待完善···");
                 break;
             case "关于":
                 dialogs.build({
@@ -146,6 +147,7 @@ function initLeftMenu() {
                 break;
         }
     });
+
     //让工具栏左上角可以打开侧拉菜单
     ui.toolbar.setupWithDrawer(ui.drawer);
 }
@@ -168,12 +170,22 @@ function initData() {
 
     //#region 固时收集
     let fixedTimeCollectEnergy = functionStorage.get(FunctionConstant.FIXED_TIME_COLLECT_ENERGY)
-    if (fixedTimeCollectEnergy != null) {
+    if (fixedTimeCollectEnergy) {
         ui.fixedTimeCollectEnergy.setChecked(fixedTimeCollectEnergy.enabled)
+    }
+    //#endregion
+
+    //#region 定时收集
+    let timingCollectEnergy = functionStorage.get(FunctionConstant.TIMING_COLLECT_ENERGY)
+    if (timingCollectEnergy) {
+        ui.timingCollectEnergy.setChecked(timingCollectEnergy.enabled)
     }
     //#endregion
 }
 
+/**
+ * 初始化监听
+ */
 function initMonitor() {
     //监听选项菜单点击
     ui.emitter.on("options_item_selected", (e, item) => {
@@ -202,6 +214,9 @@ function initMonitor() {
     });
 }
 
+/**
+ * 初始化事件
+ */
 function initAction() {
     // 用户勾选无障碍服务的选项时，跳转到页面让用户去开启
     ui.autoService.on("check", function (checked) {
@@ -275,25 +290,65 @@ function initAction() {
 
         function cancelFixedTimeTask() {
             let fixedTimeCollectEnergy = functionStorage.get(FunctionConstant.FIXED_TIME_COLLECT_ENERGY);
-            console.log(fixedTimeCollectEnergy);
-            console.log(fixedTimeCollectEnergy.earlyMorningTaskId);
-            if (fixedTimeCollectEnergy != null) {
-                if (fixedTimeCollectEnergy.earlyMorningTaskId != null) {
+
+            if (fixedTimeCollectEnergy) {
+                if (fixedTimeCollectEnergy.earlyMorningTaskId) {
                     $timers.removeTimedTask(fixedTimeCollectEnergy.earlyMorningTaskId);
                 }
 
-                if (fixedTimeCollectEnergy.morningTaskId != null) {
+                if (fixedTimeCollectEnergy.morningTaskId) {
                     $timers.removeTimedTask(fixedTimeCollectEnergy.morningTaskId);
                 }
-
-                fixedTimeCollectEnergy = {
-                    enabled: false,
-                    earlyMorningTaskId: null,
-                    morningTaskId: null
-                }
-
-                functionStorage.put(FunctionConstant.FIXED_TIME_COLLECT_ENERGY, fixedTimeCollectEnergy);
             }
+
+            fixedTimeCollectEnergy = {
+                enabled: false,
+                earlyMorningTaskId: null,
+                morningTaskId: null
+            }
+
+            functionStorage.put(FunctionConstant.FIXED_TIME_COLLECT_ENERGY, fixedTimeCollectEnergy);
+        }
+    })
+    //#endregion
+
+    //#region 定时收集
+    ui.timingCollectEnergy.on("check", (checked) => {
+        if (checked) {
+            cancelTask();
+
+            let now = new Date();
+            let newTime = now.getTime() + 60 * 60 * 1000;
+            newTime = new Date(newTime);
+
+            let task = $timers.addDisposableTask({
+                path: files.cwd() + "/modules/TimingCollect.js",
+                date: newTime.format("yyyy-MM-ddThh:mm"),
+            })
+
+            timingCollectEnergy = {
+                enabled: true,
+                taskId: task.id
+            }
+
+            functionStorage.put(FunctionConstant.TIMING_COLLECT_ENERGY, timingCollectEnergy);
+        } else {
+            cancelTask();
+        }
+
+        function cancelTask() {
+            let timingCollectEnergy = functionStorage.get(FunctionConstant.TIMING_COLLECT_ENERGY)
+
+            if (timingCollectEnergy && timingCollectEnergy.taskId) {
+                $timers.removeTimedTask(timingCollectEnergy.taskId);
+            }
+
+            timingCollectEnergy = {
+                enabled: false,
+                taskId: null
+            }
+
+            functionStorage.put(FunctionConstant.TIMING_COLLECT_ENERGY, timingCollectEnergy);
         }
     })
     //#endregion
@@ -323,3 +378,24 @@ threads.start(function () {
 
     setInterval(() => { }, 5000)
 });
+
+Date.prototype.format = function(fmt) { 
+    var o = { 
+       "M+" : this.getMonth()+1,                 //月份 
+       "d+" : this.getDate(),                    //日 
+       "h+" : this.getHours(),                   //小时 
+       "m+" : this.getMinutes(),                 //分 
+       "s+" : this.getSeconds(),                 //秒 
+       "q+" : Math.floor((this.getMonth()+3)/3), //季度 
+       "S"  : this.getMilliseconds()             //毫秒 
+   }; 
+   if(/(y+)/.test(fmt)) {
+           fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length)); 
+   }
+    for(var k in o) {
+       if(new RegExp("("+ k +")").test(fmt)){
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+        }
+    }
+   return fmt; 
+}

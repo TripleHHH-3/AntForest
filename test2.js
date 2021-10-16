@@ -5,7 +5,7 @@
 
 log($timers.addDisposableTask({
     path: files.cwd() + "/Test.js",
-    date: new Date(2021, 10, 14, 20, 15, 0)
+    date: "2021-10-16T17:13"
 }));
 
 let tasks =$timers.queryTimedTasks({})

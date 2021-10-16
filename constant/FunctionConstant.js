@@ -1,8 +1,7 @@
 let FunctionConstant = {
     FUNCTION: "function",
-    EARLY_MORNING_TASK: "earlyMorningTask",
-    MORNING_TASK: "morningTask",
-    FIXED_TIME_COLLECT_ENERGY: "fixedTimeCollectEnergy"
+    FIXED_TIME_COLLECT_ENERGY: "fixedTimeCollectEnergy",
+    TIMING_COLLECT_ENERGY: "timingCollectEnergy"
 }
 
 module.exports = FunctionConstant;
