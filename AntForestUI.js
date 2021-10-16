@@ -248,12 +248,12 @@ function initAction() {
             deleteFixedTimeTask();
 
             let earlyMorningTask = $timers.addDailyTask({
-                path: files.cwd() + "/modules/UnlockCollect.js",
+                path: files.cwd() + "/AntForest.js",
                 time: "0:00"
             });
 
             let morningTask = $timers.addDailyTask({
-                path: files.cwd() + "/modules/UnlockCollect.js",
+                path: files.cwd() + "/AntForest.js",
                 time: "7:30"
             });
 
@@ -279,7 +279,7 @@ function initAction() {
     //#endregion
 
     ui.unlockSetting.click(() => {
-        engines.execScriptFile("./ui/ui-unlock.js", { path: "./ui/" });
+        engines.execScriptFile("./ui/ui-unlock.js");
     })
 }
 
