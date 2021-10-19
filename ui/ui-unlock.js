@@ -35,10 +35,8 @@ ui.layout(
     </vertical>
 )
 
-const path = ".";
-
-let { UnlockMode } = require(path + '/enum/SettingEnum.js');
-let SettingConstant = require(path + '/constant/SettingConstant.js');
+let { UnlockMode } = require('../enum/SettingEnum.js');
+let SettingConstant = require('../constant/SettingConstant.js');
 
 let settingsStorages = storages.create(SettingConstant.SETTINGS_STORAGE);
 

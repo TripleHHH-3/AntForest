@@ -54,11 +54,14 @@
 // console.log(time1);
 
 
-let a=new Date()
-console.log(a);
+// let a=new Date()
+// console.log(a);
 
-a.setHours(23);
-console.log(a);
+// a.setHours(23);
+// console.log(a);
 
-let b=new Date()
-console.log(a==b);
+// let b=new Date()
+// console.log(a==b);
+
+let a=files.path("./")
+console.log(a);

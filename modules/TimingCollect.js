@@ -24,16 +24,15 @@ Date.prototype.format = function (fmt) {
 
 let now = new Date();
 
-let antForestExecution = engines.execScriptFile("../AntForest.js");
-toast("定时任务执行成功")
+let antForestExecution = engines.execScriptFile("../AntForest.js", { path: files.path("../") });
 
 sleep(500)
 
 while (!antForestExecution.getEngine().isDestroyed()) {
-    sleep(3000);
+    sleep(5000);
 }
 
-let newTime = now.getTime() + 60 * 60 * 1000;
+let newTime = now.getTime() + 2 * 60 * 60 * 1000;
 
 newTime = new Date(newTime);
 
@@ -51,7 +50,7 @@ if (newTime > leftTime && newTime < rightTime) {
     newTime = rightTime;
 }
 
-let rightTime = new Date();
+rightTime = new Date();
 rightTime.setHours(8);
 rightTime.setMonth(30);
 if (newTime < rightTime) {

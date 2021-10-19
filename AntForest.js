@@ -56,29 +56,21 @@ function unlockScreen() {
                 desc(pd[index]).findOne().click();
             }
 
-            sleep(500)
+            sleep(1000)
+
             if (keyguard_manager.isKeyguardLocked()) {
-                log("密码不正确！");
+                log("屏幕解锁失败");
                 exit();
+            } else {
+                console.log("屏幕解锁成功");
             }
         }
     }
 }
 
-function initMonitor() {
-    //禁止音量键调节音量
-    events.setKeyInterceptionEnabled("volume_up", true);
-    //开启按键监听
-    events.observeKey();
-    //设置监听
-    events.onKeyDown("volume_up", () => {
-        toastLog("收集能量脚本停止！");
-        exit();
-    })
-
-}
-
 function main() {
+    console.log("请求权限");
+
     //等待无障碍权限
     auto.waitFor();
     // 请求截图
@@ -86,6 +78,8 @@ function main() {
         toastLog("请求截图失败，脚本取消！")
         exit();
     }
+
+    console.log("打开支付中···");
 
     app.startActivity({
         action: "VIEW",
@@ -103,4 +97,17 @@ function main() {
     back();
 
     exit();
+}
+
+function initMonitor() {
+    //禁止音量键调节音量
+    events.setKeyInterceptionEnabled("volume_up", true);
+    //开启按键监听
+    events.observeKey();
+    //设置监听
+    events.onKeyDown("volume_up", () => {
+        toastLog("收集能量脚本停止！");
+        exit();
+    })
+
 }
