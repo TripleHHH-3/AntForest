@@ -44,7 +44,7 @@ leftTime.setMinutes(30);
 let rightTime = new Date();
 rightTime.setDate(rightTime.getDate() + 1);
 rightTime.setHours(8);
-rightTime.setMonth(30);
+rightTime.setMinutes(30);
 
 if (newTime > leftTime && newTime < rightTime) {
     newTime = rightTime;
@@ -52,7 +52,7 @@ if (newTime > leftTime && newTime < rightTime) {
 
 rightTime = new Date();
 rightTime.setHours(8);
-rightTime.setMonth(30);
+rightTime.setMinutes(30);
 if (newTime < rightTime) {
     newTime = rightTime;
 }

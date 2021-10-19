@@ -71,11 +71,11 @@ function unlockScreen() {
 function main() {
     console.log("请求权限");
 
-    //等待无障碍权限
-    auto.waitFor();
+    //请求无障碍权限
+    auto();
     // 请求截图
     if (!requestScreenCapture()) {
-        toastLog("请求截图失败，脚本取消！")
+        toastLog("请求截图权限失败")
         exit();
     }
 
