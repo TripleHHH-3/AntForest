@@ -1,5 +1,6 @@
 require('./modules/Crack.js').unfreeze();
 let EnergyBall = require('./modules/EnergyBall.js');
+let TimingCollect = require('./modules/TimingCollect.js');
 
 initMonitor();
 unlockScreen();
@@ -69,6 +70,8 @@ function unlockScreen() {
 }
 
 function main() {
+    toast("脚本启动中···")
+
     console.log("请求权限");
 
     //请求无障碍权限
@@ -95,6 +98,8 @@ function main() {
     EnergyBall.collectFriendEnergyBall();
 
     back();
+
+    TimingCollect.timingCollect();
 
     exit();
 }

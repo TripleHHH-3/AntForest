@@ -1,18 +1,72 @@
+let SettingConstant = require('../constant/SettingConstant.js');
 let FunctionConstant = require('../constant/FunctionConstant.js');
-let functionStorage = storages.create(FunctionConstant.FUNCTION);
 
-Date.prototype.format = function (fmt) {
+let functionStorage = storages.create(FunctionConstant.FUNCTION);
+let settingsStorages = storages.create(SettingConstant.SETTINGS_STORAGE);
+
+let timingCollectSetting = settingsStorages.get(SettingConstant.TIMING_COLLECT_SETTING);
+
+let TimingCollect = {
+    timingCollect: function () {
+        let timingCollectEnergy = functionStorage.get(FunctionConstant.TIMING_COLLECT_ENERGY)
+        //未启动定时功能直接返回
+        if (!timingCollectEnergy || !timingCollectEnergy.enabled) {
+            return;
+        }
+
+        let nextTime = new Date().getTime() + (timingCollectSetting.intervals || 60) * 60 * 1000;
+        nextTime = new Date(nextTime);
+
+        //#region 时间处理
+        //大于当天23.30和小于次天8.30时，取次天8.30
+        let leftTime = new Date();
+        leftTime.setHours(23);
+        leftTime.setMinutes(30);
+
+        let rightTime = new Date();
+        rightTime.setDate(rightTime.getDate() + 1);
+        rightTime.setHours(8);
+        rightTime.setMinutes(30);
+
+        if (nextTime > leftTime && nextTime < rightTime) {
+            nextTime = rightTime;
+        }
+
+        //小于当天8.30时，取当天8.30
+        rightTime = new Date();
+        rightTime.setHours(8);
+        rightTime.setMinutes(30);
+        if (nextTime < rightTime) {
+            nextTime = rightTime;
+        }
+        //#endregion
+
+        let task = $timers.addDisposableTask({
+            path: files.cwd().slice(0, -8) + "/AntForest.js",
+            date: format(nextTime, "yyyy-MM-ddThh:mm"),
+        })
+
+        timingCollectEnergy = {
+            enabled: true,
+            taskId: task.id
+        }
+
+        functionStorage.put(FunctionConstant.TIMING_COLLECT_ENERGY, timingCollectEnergy);
+    }
+}
+
+function format(time, fmt) {
     var o = {
-        "M+": this.getMonth() + 1,                 //月份 
-        "d+": this.getDate(),                    //日 
-        "h+": this.getHours(),                   //小时 
-        "m+": this.getMinutes(),                 //分 
-        "s+": this.getSeconds(),                 //秒 
-        "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
-        "S": this.getMilliseconds()             //毫秒 
+        "M+": time.getMonth() + 1,                 //月份 
+        "d+": time.getDate(),                    //日 
+        "h+": time.getHours(),                   //小时 
+        "m+": time.getMinutes(),                 //分 
+        "s+": time.getSeconds(),                 //秒 
+        "q+": Math.floor((time.getMonth() + 3) / 3), //季度 
+        "S": time.getMilliseconds()             //毫秒 
     };
     if (/(y+)/.test(fmt)) {
-        fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        fmt = fmt.replace(RegExp.$1, (time.getFullYear() + "").substr(4 - RegExp.$1.length));
     }
     for (var k in o) {
         if (new RegExp("(" + k + ")").test(fmt)) {
@@ -22,50 +76,4 @@ Date.prototype.format = function (fmt) {
     return fmt;
 }
 
-let now = new Date();
-
-let antForestExecution = engines.execScriptFile("../AntForest.js", { path: files.path("../") });
-
-sleep(500)
-
-while (!antForestExecution.getEngine().isDestroyed()) {
-    sleep(5000);
-}
-
-let newTime = now.getTime() + 2 * 60 * 60 * 1000;
-
-newTime = new Date(newTime);
-
-//#region 时间处理
-let leftTime = new Date();
-leftTime.setHours(23);
-leftTime.setMinutes(30);
-
-let rightTime = new Date();
-rightTime.setDate(rightTime.getDate() + 1);
-rightTime.setHours(8);
-rightTime.setMinutes(30);
-
-if (newTime > leftTime && newTime < rightTime) {
-    newTime = rightTime;
-}
-
-rightTime = new Date();
-rightTime.setHours(8);
-rightTime.setMinutes(30);
-if (newTime < rightTime) {
-    newTime = rightTime;
-}
-//#endregion
-
-let task = $timers.addDisposableTask({
-    path: files.cwd() + "/TimingCollect.js",
-    date: newTime.format("yyyy-MM-ddThh:mm"),
-})
-
-timingCollectEnergy = {
-    enabled: true,
-    taskId: task.id
-}
-
-functionStorage.put(FunctionConstant.TIMING_COLLECT_ENERGY, timingCollectEnergy);
+module.exports = TimingCollect;

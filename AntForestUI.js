@@ -55,6 +55,10 @@ ui.layout(
                                 <button id="unlockSetting" text="解锁设置" style="Widget.AppCompat.Button.Borderless.Colored" w="*" />
                                 <View bg="#4EBFDD" h="*" w="5" />
                             </card>
+                            <card w="*" h="auto" margin="10 5" cardCornerRadius="2dp" cardElevation="1dp" gravity="center_vertical">
+                                <button id="timingCollectSetting" text="定时设置" style="Widget.AppCompat.Button.Borderless.Colored" w="*" />
+                                <View bg="#4EBFDD" h="*" w="5" />
+                            </card>
                             <card id="showHide_func4" w="*" h="auto" margin="10 5" cardCornerRadius="2dp" cardElevation="1dp" gravity="center_vertical">
                                 <vertical padding="18 8" marginBottom="2" h="auto">
                                     <text text="[浏览设置]" color="#FFA500" textStyle="bold" textSize="15sp" />
@@ -109,6 +113,10 @@ let FunctionConstant = require('./constant/FunctionConstant.js');
 
 let functionStorage = storages.create(FunctionConstant.FUNCTION);
 let AntForestExecution = null;
+
+let SettingConstant = require('./constant/SettingConstant.js');
+
+let settingsStorages = storages.create(SettingConstant.SETTINGS_STORAGE);
 
 initData();
 initLeftMenu();
@@ -252,8 +260,6 @@ function initAction() {
         //禁止按钮
         ui.start.setEnabled(false);
 
-        toast("脚本启动中···")
-
         //开启脚本
         threads.start(function () {
             AntForestExecution = engines.execScriptFile("./AntForest.js");
@@ -317,13 +323,18 @@ function initAction() {
         if (checked) {
             cancelTask();
 
-            let now = new Date();
-            let newTime = now.getTime() + 2 * 60 * 60 * 1000;
-            newTime = new Date(newTime);
+            let intervals = 60
+            let timingCollectSetting = settingsStorages.get(SettingConstant.TIMING_COLLECT_SETTING);
+            if (timingCollectSetting) {
+                intervals = timingCollectSetting.intervals || 60
+            }
+
+            let nextTime = new Date().getTime() + intervals * 60 * 1000;
+            nextTime = new Date(nextTime);
 
             let task = $timers.addDisposableTask({
-                path: files.cwd() + "/modules/TimingCollect.js",
-                date: newTime.format("yyyy-MM-ddThh:mm"),
+                path: files.cwd() + "/AntForest.js",
+                date: format(nextTime, "yyyy-MM-ddThh:mm"),
             })
 
             timingCollectEnergy = {
@@ -356,6 +367,10 @@ function initAction() {
     ui.unlockSetting.click(() => {
         engines.execScriptFile("./ui/ui-unlock.js", { path: files.path("./ui") });
     })
+
+    ui.timingCollectSetting.click(() => {
+        engines.execScriptFile("./ui/ui-timingCollect.js", { path: files.path("./ui") });
+    })
 }
 
 //两次才能返回
@@ -379,18 +394,18 @@ threads.start(function () {
     setInterval(() => { }, 5000)
 });
 
-Date.prototype.format = function (fmt) {
+function format(time, fmt) {
     var o = {
-        "M+": this.getMonth() + 1,                 //月份 
-        "d+": this.getDate(),                    //日 
-        "h+": this.getHours(),                   //小时 
-        "m+": this.getMinutes(),                 //分 
-        "s+": this.getSeconds(),                 //秒 
-        "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
-        "S": this.getMilliseconds()             //毫秒 
+        "M+": time.getMonth() + 1,                 //月份 
+        "d+": time.getDate(),                    //日 
+        "h+": time.getHours(),                   //小时 
+        "m+": time.getMinutes(),                 //分 
+        "s+": time.getSeconds(),                 //秒 
+        "q+": Math.floor((time.getMonth() + 3) / 3), //季度 
+        "S": time.getMilliseconds()             //毫秒 
     };
     if (/(y+)/.test(fmt)) {
-        fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        fmt = fmt.replace(RegExp.$1, (time.getFullYear() + "").substr(4 - RegExp.$1.length));
     }
     for (var k in o) {
         if (new RegExp("(" + k + ")").test(fmt)) {
