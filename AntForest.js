@@ -99,8 +99,6 @@ function main() {
 
     back();
 
-    TimingCollect.timingCollect();
-
     exit();
 }
 

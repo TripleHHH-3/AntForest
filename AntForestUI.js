@@ -333,7 +333,7 @@ function initAction() {
             nextTime = new Date(nextTime);
 
             let task = $timers.addDisposableTask({
-                path: files.cwd() + "/AntForest.js",
+                path: files.cwd() + "/modules/TimingCollectTask.js",
                 date: format(nextTime, "yyyy-MM-ddThh:mm"),
             })
 
@@ -364,6 +364,7 @@ function initAction() {
     })
     //#endregion
 
+    //#region 设置ui界面跳转
     ui.unlockSetting.click(() => {
         engines.execScriptFile("./ui/ui-unlock.js", { path: files.path("./ui") });
     })
@@ -371,6 +372,7 @@ function initAction() {
     ui.timingCollectSetting.click(() => {
         engines.execScriptFile("./ui/ui-timingCollect.js", { path: files.path("./ui") });
     })
+    //#endregion
 }
 
 //两次才能返回

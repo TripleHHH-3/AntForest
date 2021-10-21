@@ -7,14 +7,19 @@ let settingsStorages = storages.create(SettingConstant.SETTINGS_STORAGE);
 let timingCollectSetting = settingsStorages.get(SettingConstant.TIMING_COLLECT_SETTING);
 
 let TimingCollect = {
-    timingCollect: function () {
+    timingCollect: function (nowTime) {
         let timingCollectEnergy = functionStorage.get(FunctionConstant.TIMING_COLLECT_ENERGY)
         //未启动定时功能直接返回
         if (!timingCollectEnergy || !timingCollectEnergy.enabled) {
             return;
         }
 
-        let nextTime = new Date().getTime() + (timingCollectSetting.intervals || 60) * 60 * 1000;
+        let intervals = 60;
+        if (timingCollectSetting.intervals) {
+            intervals = timingCollectSetting.intervals;
+        }
+
+        let nextTime = nowTime.getTime() + intervals * 60 * 1000;
         nextTime = new Date(nextTime);
 
         //#region 时间处理
