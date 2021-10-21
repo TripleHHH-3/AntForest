@@ -47,7 +47,7 @@ let TimingCollect = {
         //#endregion
 
         let task = $timers.addDisposableTask({
-            path: files.cwd().slice(0, -8) + "/AntForest.js",
+            path: files.cwd() + "/TimingCollectTask.js",
             date: format(nextTime, "yyyy-MM-ddThh:mm"),
         })
 
