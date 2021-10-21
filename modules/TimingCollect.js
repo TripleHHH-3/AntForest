@@ -15,8 +15,8 @@ let TimingCollect = {
         }
 
         let intervals = 60;
-        if (timingCollectSetting.intervals) {
-            intervals = timingCollectSetting.intervals;
+        if (timingCollectSetting) {
+            intervals = timingCollectSetting.intervals || 60
         }
 
         let nextTime = nowTime.getTime() + intervals * 60 * 1000;
