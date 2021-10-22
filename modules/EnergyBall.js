@@ -53,7 +53,7 @@ EnergyBall.collectEnergyBall = function () {
 EnergyBall.traversalFriendRanking = function () {
     let collection = {
         collect: false,//是否收集
-        remainingTime = 60//朋友能量剩余时间
+        remainingTime: 60//朋友能量剩余时间
     };
 
     let rankingList = className("android.webkit.WebView").findOne();
@@ -89,6 +89,11 @@ EnergyBall.traversalFriendRanking = function () {
             //记录最小的剩余时间
             if (energyBall.collectable && energyBall.remainingTime && energyBall.remainingTime < collection.remainingTime) {
                 collection.remainingTime = energyBall.remainingTime;
+            }
+
+            //当存在剩余时间在2分钟内则强制设true，让脚本循环查看排行榜
+            if(energyBall.collectable && energyBall.remainingTime && energyBall.remainingTime <= 2){
+                collection.collect = true;
             }
         }
 
@@ -165,7 +170,7 @@ EnergyBall.enterFriendHomepage = function (friend) {
 EnergyBall.collectFriendEnergyBall = function () {
     let collection = {
         collect: true,
-        remainingTime = 60
+        remainingTime: 60
     };
 
     //循环收集能量，直到没有能量收集
@@ -185,7 +190,7 @@ EnergyBall.collectFriendEnergyBall = function () {
         nextTime = new Date(nextTime);
 
         let task = $timers.addDisposableTask({
-            path: files.cwd().slice(0, -8) + "/AntForest.js",
+            path: files.cwd() + "/AntForest.js",
             date: format(nextTime, "yyyy-MM-ddThh:mm"),
         })
     }

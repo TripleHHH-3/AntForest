@@ -26,7 +26,7 @@ ui.layout(
                                 <View bg="#00BFFF" h="*" w="10"  ></View>
                                 <vertical padding="10 8" h="auto" w="0" layout_weight="1">
                                     <text w="auto" textColor="#222222" textSize="14sp" text="固时收集能量" />
-                                    <text w="auto" textColor="#999999" textSize="12sp" text="凌晨0:00和早晨7:30" />
+                                    <text w="auto" textColor="#999999" textSize="12sp" text="凌晨0:00和早晨7:00" />
                                 </vertical>
                                 <checkbox id="fixedTimeCollectEnergy" marginLeft="4" marginRight="6" checked="false" />
                             </horizontal>
@@ -280,7 +280,7 @@ function initAction() {
 
             let morningTask = $timers.addDailyTask({
                 path: files.cwd() + "/AntForest.js",
-                time: "7:30"
+                time: "7:00"
             });
 
             let fixedTimeCollectEnergy = {
