@@ -2,6 +2,7 @@ require('./modules/Crack.js').unfreeze();
 let EnergyBall = require('./modules/EnergyBall.js');
 let TimingCollect = require('./modules/TimingCollect.js');
 
+checkRunning();
 initMonitor();
 unlockScreen();
 main();
@@ -113,4 +114,19 @@ function initMonitor() {
         exit();
     })
 
+}
+
+function checkRunning() {
+    let count = 0;
+    
+    engines.all().forEach(i => {
+        if (files.getName(i.getSource()) == "AntForest.js") {
+            count++;
+        }
+    })
+
+    if (count > 1) {
+        toast("AntForest已有实例运行");
+        exit();
+    }
 }
