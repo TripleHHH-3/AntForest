@@ -51,6 +51,11 @@ EnergyBall.collectEnergyBall = function () {
  * 遍历朋友排行榜
  */
 EnergyBall.traversalFriendRanking = function () {
+    let collection = {
+        collect: false,//是否收集
+        remainingTime = 60//朋友能量剩余时间
+    };
+
     let rankingList = className("android.webkit.WebView").findOne();
 
     let indexTemp = 0
@@ -78,6 +83,12 @@ EnergyBall.traversalFriendRanking = function () {
                 //收集朋友能量
                 EnergyBall.enterFriendHomepage(friend);
                 cs = captureScreen();
+                collection.collect = true;
+            }
+
+            //记录最小的剩余时间
+            if (energyBall.collectable && energyBall.remainingTime && energyBall.remainingTime < collection.remainingTime) {
+                collection.remainingTime = energyBall.remainingTime;
             }
         }
 
@@ -85,6 +96,8 @@ EnergyBall.traversalFriendRanking = function () {
             break;
         }
     }
+
+    return collection;
 }
 
 function judgingCollectable(cs, friend) {
@@ -150,30 +163,56 @@ EnergyBall.enterFriendHomepage = function (friend) {
  * 收集好友能量
  */
 EnergyBall.collectFriendEnergyBall = function () {
-    //#region 第一次进入排行榜和收集好友能量
-    text("查看更多好友").findOne().parent().click();
+    let collection = {
+        collect: true,
+        remainingTime = 60
+    };
 
-    text("排行榜").waitFor();
-    sleep(500)
+    //循环收集能量，直到没有能量收集
+    while (collection.collect) {
+        text("查看更多好友").findOne().parent().click();
 
-    EnergyBall.traversalFriendRanking();
+        text("排行榜").waitFor();
+        sleep(500)
 
-    back();
-    //#endregion
+        collection = EnergyBall.traversalFriendRanking();
 
-    //#region 第二次进入排行榜和收集好友能量
-    text("查看更多好友").findOne().parent().click();
+        back();
+    }
 
-    text("排行榜").waitFor();
-    sleep(500)
+    if (collection.remainingTime < 60) {
+        let nextTime = new Date().getTime() + collection.remainingTime * 60 * 1000;
+        nextTime = new Date(nextTime);
 
-    EnergyBall.traversalFriendRanking();
-    //#endregion
+        let task = $timers.addDisposableTask({
+            path: files.cwd().slice(0, -8) + "/AntForest.js",
+            date: format(nextTime, "yyyy-MM-ddThh:mm"),
+        })
+    }
 
-    //返回个人主页
-    back();
     text("种树").waitFor();
     sleep(500)
+}
+
+function format(time, fmt) {
+    var o = {
+        "M+": time.getMonth() + 1,                 //月份 
+        "d+": time.getDate(),                    //日 
+        "h+": time.getHours(),                   //小时 
+        "m+": time.getMinutes(),                 //分 
+        "s+": time.getSeconds(),                 //秒 
+        "q+": Math.floor((time.getMonth() + 3) / 3), //季度 
+        "S": time.getMilliseconds()             //毫秒 
+    };
+    if (/(y+)/.test(fmt)) {
+        fmt = fmt.replace(RegExp.$1, (time.getFullYear() + "").substr(4 - RegExp.$1.length));
+    }
+    for (var k in o) {
+        if (new RegExp("(" + k + ")").test(fmt)) {
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        }
+    }
+    return fmt;
 }
 
 module.exports = EnergyBall;
