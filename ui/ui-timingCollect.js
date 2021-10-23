@@ -32,6 +32,7 @@ ui.layout(
 let SettingConstant = require('../constant/SettingConstant.js');
 
 let settingsStorages = storages.create(SettingConstant.SETTINGS_STORAGE);
+let timingCollectSetting = settingsStorages.get(SettingConstant.TIMING_COLLECT_SETTING) || {};
 
 initData();
 
@@ -39,19 +40,13 @@ initData();
  * 初始化UI和数据
  */
 function initData() {
-    let timingCollectSetting = settingsStorages.get(SettingConstant.TIMING_COLLECT_SETTING);
-
-    if (timingCollectSetting) {
-        if (timingCollectSetting.intervals) {
-            ui.intervals.setText(timingCollectSetting.intervals)
-        }
+    if (timingCollectSetting.intervals) {
+        ui.intervals.setText(timingCollectSetting.intervals)
     }
 }
 
 ui.saveSettings.click(() => {
-    let timingCollectSetting = {
-        intervals: ui.intervals.getText()
-    }
+    timingCollectSetting.intervals = ui.intervals.getText();
 
     //保存
     settingsStorages.put(SettingConstant.TIMING_COLLECT_SETTING, timingCollectSetting);

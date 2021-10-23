@@ -30,8 +30,9 @@ let TimingCollect = {
 
         let rightTime = new Date();
         rightTime.setDate(rightTime.getDate() + 1);
-        rightTime.setHours(8);
-        rightTime.setMinutes(30);
+        rightTime.setHours(7);
+        rightTime.setMinutes(00);
+        rightTime.setMinutes(intervals);
 
         if (nextTime > leftTime && nextTime < rightTime) {
             nextTime = rightTime;
@@ -39,8 +40,9 @@ let TimingCollect = {
 
         //小于当天8.30时，取当天8.30
         rightTime = new Date();
-        rightTime.setHours(8);
-        rightTime.setMinutes(30);
+        rightTime.setHours(7);
+        rightTime.setMinutes(00);
+        rightTime.setMinutes(intervals);
         if (nextTime < rightTime) {
             nextTime = rightTime;
         }

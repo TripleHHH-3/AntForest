@@ -22,6 +22,7 @@ ui.layout(
                                     </linear>
                                 </vertical>
                             </horizontal>
+
                             <horizontal gravity="center_vertical" padding="5 5">
                                 <View bg="#00BFFF" h="*" w="10"  ></View>
                                 <vertical padding="10 8" h="auto" w="0" layout_weight="1">
@@ -38,6 +39,15 @@ ui.layout(
                                     <text w="auto" textColor="#999999" textSize="12sp" text="时间间隔可以去隔壁设置" />
                                 </vertical>
                                 <checkbox id="timingCollectEnergy" marginLeft="4" marginRight="6" checked="false" />
+                            </horizontal>
+
+                            <horizontal gravity="center_vertical" padding="5 5" >
+                                <View bg="#00FFFF" h="*" w="10"  ></View>
+                                <vertical padding="10 8" h="auto" w="0" layout_weight="1">
+                                    <text w="auto" textColor="#222222" textSize="14sp" text="检测剩余时间" />
+                                    <text w="auto" textColor="#999999" textSize="12sp" text="记录能量成熟时间，自动收集能量" />
+                                </vertical>
+                                <checkbox id="checkRemainingTime" marginLeft="4" marginRight="6" checked="false" />
                             </horizontal>
 
                             <horizontal gravity="right">
@@ -112,11 +122,15 @@ ui.layout(
 let FunctionConstant = require('./constant/FunctionConstant.js');
 
 let functionStorage = storages.create(FunctionConstant.FUNCTION);
+let fixedTimeCollectEnergy = functionStorage.get(FunctionConstant.FIXED_TIME_COLLECT_ENERGY) || {};
+
 let AntForestExecution = null;
 
 let SettingConstant = require('./constant/SettingConstant.js');
 
 let settingsStorages = storages.create(SettingConstant.SETTINGS_STORAGE);
+let timingCollectSetting = settingsStorages.get(SettingConstant.TIMING_COLLECT_SETTING) || {};
+let checkRemainingTimeSetting = settingsStorages.get(SettingConstant.CHECK_REMAINING_TIME_SETTING) || {};
 
 initData();
 initLeftMenu();
@@ -177,16 +191,20 @@ function initData() {
     });
 
     //#region 固时收集
-    let fixedTimeCollectEnergy = functionStorage.get(FunctionConstant.FIXED_TIME_COLLECT_ENERGY)
-    if (fixedTimeCollectEnergy) {
+    if (fixedTimeCollectEnergy.enabled == true) {
         ui.fixedTimeCollectEnergy.setChecked(fixedTimeCollectEnergy.enabled)
     }
     //#endregion
 
     //#region 定时收集
-    let timingCollectEnergy = functionStorage.get(FunctionConstant.TIMING_COLLECT_ENERGY)
-    if (timingCollectEnergy) {
-        ui.timingCollectEnergy.setChecked(timingCollectEnergy.enabled)
+    if (timingCollectSetting.enabled == true) {
+        ui.timingCollectEnergy.setChecked(timingCollectSetting.enabled)
+    }
+    //#endregion
+
+    //#region 检测剩余时间
+    if (checkRemainingTimeSetting.enabled == true) {
+        ui.checkRemainingTime.setChecked(true)
     }
     //#endregion
 }
@@ -283,7 +301,7 @@ function initAction() {
                 time: "7:00"
             });
 
-            let fixedTimeCollectEnergy = {
+            fixedTimeCollectEnergy = {
                 enabled: true,
                 earlyMorningTaskId: earlyMorningTask.id,
                 morningTaskId: morningTask.id
@@ -295,16 +313,12 @@ function initAction() {
         }
 
         function cancelFixedTimeTask() {
-            let fixedTimeCollectEnergy = functionStorage.get(FunctionConstant.FIXED_TIME_COLLECT_ENERGY);
+            if (fixedTimeCollectEnergy.earlyMorningTaskId) {
+                $timers.removeTimedTask(fixedTimeCollectEnergy.earlyMorningTaskId);
+            }
 
-            if (fixedTimeCollectEnergy) {
-                if (fixedTimeCollectEnergy.earlyMorningTaskId) {
-                    $timers.removeTimedTask(fixedTimeCollectEnergy.earlyMorningTaskId);
-                }
-
-                if (fixedTimeCollectEnergy.morningTaskId) {
-                    $timers.removeTimedTask(fixedTimeCollectEnergy.morningTaskId);
-                }
+            if (fixedTimeCollectEnergy.morningTaskId) {
+                $timers.removeTimedTask(fixedTimeCollectEnergy.morningTaskId);
             }
 
             fixedTimeCollectEnergy = {
@@ -323,11 +337,7 @@ function initAction() {
         if (checked) {
             cancelTask();
 
-            let intervals = 60
-            let timingCollectSetting = settingsStorages.get(SettingConstant.TIMING_COLLECT_SETTING);
-            if (timingCollectSetting) {
-                intervals = timingCollectSetting.intervals || 60
-            }
+            let intervals = timingCollectSetting.intervals || 60;
 
             let nextTime = new Date().getTime() + intervals * 60 * 1000;
             nextTime = new Date(nextTime);
@@ -337,30 +347,32 @@ function initAction() {
                 date: format(nextTime, "yyyy-MM-ddThh:mm"),
             })
 
-            timingCollectEnergy = {
-                enabled: true,
-                taskId: task.id
-            }
+            timingCollectSetting.enabled = true;
+            timingCollectSetting.taskId = task.id;
 
-            functionStorage.put(FunctionConstant.TIMING_COLLECT_ENERGY, timingCollectEnergy);
+            settingsStorages.put(SettingConstant.TIMING_COLLECT_SETTING, timingCollectSetting);
         } else {
             cancelTask();
         }
 
         function cancelTask() {
-            let timingCollectEnergy = functionStorage.get(FunctionConstant.TIMING_COLLECT_ENERGY)
-
-            if (timingCollectEnergy && timingCollectEnergy.taskId) {
-                $timers.removeTimedTask(timingCollectEnergy.taskId);
+            if (timingCollectSetting.taskId) {
+                $timers.removeTimedTask(timingCollectSetting.taskId);
             }
 
-            timingCollectEnergy = {
-                enabled: false,
-                taskId: null
-            }
+            timingCollectSetting.enabled = false;
+            timingCollectSetting.taskId = null;
 
-            functionStorage.put(FunctionConstant.TIMING_COLLECT_ENERGY, timingCollectEnergy);
+            settingsStorages.put(SettingConstant.TIMING_COLLECT_SETTING, timingCollectSetting);
         }
+    })
+    //#endregion
+
+    //#region 检测剩余时间
+    ui.checkRemainingTime.on("check", (checked) => {
+        checkRemainingTimeSetting.enabled = checked;
+
+        settingsStorages.put(SettingConstant.CHECK_REMAINING_TIME_SETTING, checkRemainingTimeSetting)
     })
     //#endregion
 

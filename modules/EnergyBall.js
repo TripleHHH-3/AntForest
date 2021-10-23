@@ -1,4 +1,8 @@
-let SysConstant = require('../SysConstant.js');
+let SysConstant = require('../constant/SysConstant.js');
+let SettingConstant = require('../constant/SettingConstant.js');
+
+let settingsStorages = storages.create(SettingConstant.SETTINGS_STORAGE);
+let checkRemainingTimeSetting = settingsStorages.get(SettingConstant.CHECK_REMAINING_TIME_SETTING) || {};
 
 function EnergyBall() {
 }
@@ -92,7 +96,7 @@ EnergyBall.traversalFriendRanking = function () {
             }
 
             //当存在剩余时间在2分钟内则强制设true，让脚本循环查看排行榜
-            if(energyBall.collectable && energyBall.remainingTime && energyBall.remainingTime <= 2){
+            if (energyBall.collectable && energyBall.remainingTime && energyBall.remainingTime <= 2) {
                 collection.collect = true;
             }
         }
@@ -185,7 +189,7 @@ EnergyBall.collectFriendEnergyBall = function () {
         back();
     }
 
-    if (collection.remainingTime < 60) {
+    if (collection.remainingTime < 60 && checkRemainingTimeSetting.enabled == true) {
         let nextTime = new Date().getTime() + collection.remainingTime * 60 * 1000;
         nextTime = new Date(nextTime);
 
