@@ -57,7 +57,7 @@ EnergyBall.collectEnergyBall = function () {
 EnergyBall.traversalFriendRanking = function () {
     let collection = {
         collect: false,//是否收集
-        remainingTime: 60//朋友能量剩余时间
+        remainingTime: 61//朋友能量剩余时间
     };
 
     let rankingList = className("android.webkit.WebView").findOne();
@@ -174,7 +174,7 @@ EnergyBall.enterFriendHomepage = function (friend) {
 EnergyBall.collectFriendEnergyBall = function () {
     let collection = {
         collect: true,
-        remainingTime: 60
+        remainingTime: 61
     };
 
     //循环收集能量，直到没有能量收集
@@ -189,7 +189,7 @@ EnergyBall.collectFriendEnergyBall = function () {
         back();
     }
 
-    if (collection.remainingTime < 60 && checkRemainingTimeSetting.enabled == true) {
+    if (collection.remainingTime < 61 && checkRemainingTimeSetting.enabled == true) {
         let nextTime = new Date().getTime() + collection.remainingTime * 60 * 1000;
         nextTime = new Date(nextTime);
 
