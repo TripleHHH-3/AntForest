@@ -52,6 +52,71 @@ EnergyBall.collectEnergyBall = function () {
 }
 
 /**
+ * 收集自己的能量
+ */
+EnergyBall.collectMyEnergyBall = function () {
+    EnergyBall.collectEnergyBall();
+
+    //#region 检测自己能量剩余时间
+    sleep(1000);
+
+    let energyBallArr = EnergyBall.findEnergyBall();
+
+    if (energyBallArr.length > 0) {
+        //导入插件
+        let ocr;
+        try {
+            ocr = $plugins.load("com.hraps.ocr");
+        } catch (error) {
+            return;//没有ocr插件，直接结束
+        }
+
+        let cs = captureScreen();
+
+        let remainingTimeMin = 60;
+
+        energyBallArr.forEach(energyBall => {
+
+            //裁剪出能量球图片
+            let ballImg = images.clip(
+                cs,
+                energyBall.x - energyBall.radius,
+                energyBall.y - energyBall.radius,
+                energyBall.radius * 2,
+                energyBall.radius * 2
+            );
+
+            results = ocr.detect(ballImg.getBitmap(), 0.8)
+            //识别结果过滤
+            results = ocr.filterScore(results, 0.5, 0.5, 0.5)
+
+            if (results.size() == 2 && results.get(0).text == "还剩") {
+                let timeStr = results.get(1).text;
+                if (parseInt(timeStr.substring(0, 2)) == 0) {
+                    let remainingTime = parseInt(Str.substring(3, 5));
+                    if (!isNaN(remainingTime) && remainingTime < remainingTimeMin) {
+                        remainingTimeMin = remainingTime;
+                    }
+                }
+            }
+
+            ballImg.recycle()
+        })
+
+        if (remainingTimeMin < 60) {
+            let nextTime = new Date().getTime() + remainingTimeMin * 60 * 1000;
+            nextTime = new Date(nextTime);
+
+            let task = $timers.addDisposableTask({
+                path: files.cwd() + "/AntForest.js",
+                date: format(nextTime, "yyyy-MM-ddThh:mm"),
+            })
+        }
+    }
+    //#endregion
+}
+
+/**
  * 遍历朋友排行榜
  */
 EnergyBall.traversalFriendRanking = function () {

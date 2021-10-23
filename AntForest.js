@@ -93,7 +93,7 @@ function main() {
     text("种树").waitFor();
     sleep(500)
 
-    EnergyBall.collectEnergyBall();
+    EnergyBall.collectMyEnergyBall();
     sleep(500);
 
     EnergyBall.collectFriendEnergyBall();
@@ -118,7 +118,7 @@ function initMonitor() {
 
 function checkRunning() {
     let count = 0;
-    
+
     engines.all().forEach(i => {
         if (files.getName(i.getSource()) == "AntForest.js") {
             count++;
