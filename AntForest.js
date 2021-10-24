@@ -83,7 +83,7 @@ function main() {
         exit();
     }
 
-    console.log("打开支付中···");
+    console.log("打开支付宝");
 
     app.startActivity({
         action: "VIEW",
@@ -99,7 +99,7 @@ function main() {
     EnergyBall.collectFriendEnergyBall();
 
     back();
-
+    console.log("能量收取结束");
     exit();
 }
 

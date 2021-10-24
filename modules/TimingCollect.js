@@ -4,20 +4,16 @@ let FunctionConstant = require('../constant/FunctionConstant.js');
 let functionStorage = storages.create(FunctionConstant.FUNCTION);
 let settingsStorages = storages.create(SettingConstant.SETTINGS_STORAGE);
 
-let timingCollectSetting = settingsStorages.get(SettingConstant.TIMING_COLLECT_SETTING);
+let timingCollectSetting = settingsStorages.get(SettingConstant.TIMING_COLLECT_SETTING) || {};
 
 let TimingCollect = {
     timingCollect: function (nowTime) {
-        let timingCollectEnergy = functionStorage.get(FunctionConstant.TIMING_COLLECT_ENERGY)
         //未启动定时功能直接返回
-        if (!timingCollectEnergy || !timingCollectEnergy.enabled) {
+        if (timingCollectSetting.enabled) {
             return;
         }
 
-        let intervals = 60;
-        if (timingCollectSetting) {
-            intervals = timingCollectSetting.intervals || 60
-        }
+        let intervals = timingCollectSetting.intervals || 60
 
         let nextTime = nowTime.getTime() + intervals * 60 * 1000;
         nextTime = new Date(nextTime);
@@ -53,12 +49,9 @@ let TimingCollect = {
             date: format(nextTime, "yyyy-MM-ddThh:mm"),
         })
 
-        timingCollectEnergy = {
-            enabled: true,
-            taskId: task.id
-        }
+        timingCollectSetting.taskId = task.id
 
-        functionStorage.put(FunctionConstant.TIMING_COLLECT_ENERGY, timingCollectEnergy);
+        settingsStorages.put(SettingConstant.TIMING_COLLECT_SETTING, timingCollectSetting);
     }
 }
 

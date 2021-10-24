@@ -132,7 +132,6 @@ let FunctionConstant = require('./constant/FunctionConstant.js');
 
 let functionStorage = storages.create(FunctionConstant.FUNCTION);
 let fixedTimeCollectEnergy = functionStorage.get(FunctionConstant.FIXED_TIME_COLLECT_ENERGY) || {};
-let checkMyRemainingTime = functionStorage.get(FunctionConstant.CHECK_MY_REMAINING_TIME) || {};
 
 let AntForestExecution = null;
 
@@ -141,6 +140,7 @@ let SettingConstant = require('./constant/SettingConstant.js');
 let settingsStorages = storages.create(SettingConstant.SETTINGS_STORAGE);
 let timingCollectSetting = settingsStorages.get(SettingConstant.TIMING_COLLECT_SETTING) || {};
 let checkRemainingTimeSetting = settingsStorages.get(SettingConstant.CHECK_REMAINING_TIME_SETTING) || {};
+let checkMyRemainingTimeSetting = settingsStorages.get(SettingConstant.CHECK_MY_REMAINING_TIME_SETTING) || {};
 
 initData();
 initLeftMenu();
@@ -219,7 +219,7 @@ function initData() {
     //#endregion
 
     //#region 检测我的能量剩余时间
-    if (checkMyRemainingTime.enabled == true) {
+    if (checkMyRemainingTimeSetting.enabled == true) {
         ui.checkMyRemainingTime.setChecked(true)
     }
     //#endregion
@@ -384,7 +384,7 @@ function initAction() {
     })
     //#endregion
 
-    //#region 检测剩余时间
+    //#region 检测好友的剩余时间
     ui.checkRemainingTime.on("check", (checked) => {
         checkRemainingTimeSetting.enabled = checked;
 
@@ -402,9 +402,9 @@ function initAction() {
                 ui.checkMyRemainingTime.setChecked(false);
             }
 
-            functionStorage.put(FunctionConstant.CHECK_MY_REMAINING_TIME, { enabled: true })
+            settingsStorages.put(SettingConstant.CHECK_MY_REMAINING_TIME_SETTING, { enabled: true })
         } else {
-            functionStorage.put(FunctionConstant.CHECK_MY_REMAINING_TIME, { enabled: false })
+            settingsStorages.put(SettingConstant.CHECK_MY_REMAINING_TIME_SETTING, { enabled: false })
         }
     })
     //#endregion
