@@ -44,10 +44,19 @@ ui.layout(
                             <horizontal gravity="center_vertical" padding="5 5" >
                                 <View bg="#00FFFF" h="*" w="10"  ></View>
                                 <vertical padding="10 8" h="auto" w="0" layout_weight="1">
-                                    <text w="auto" textColor="#222222" textSize="14sp" text="检测剩余时间" />
+                                    <text w="auto" textColor="#222222" textSize="14sp" text="检测好友的能量剩余时间" />
                                     <text w="auto" textColor="#999999" textSize="12sp" text="记录能量成熟时间，自动收集能量" />
                                 </vertical>
                                 <checkbox id="checkRemainingTime" marginLeft="4" marginRight="6" checked="false" />
+                            </horizontal>
+
+                            <horizontal gravity="center_vertical" padding="5 5" >
+                                <View bg="#00FFFF" h="*" w="10"  ></View>
+                                <vertical padding="10 8" h="auto" w="0" layout_weight="1">
+                                    <text w="auto" textColor="#222222" textSize="14sp" text="检测自己的能量剩余时间" />
+                                    <text w="auto" textColor="#999999" textSize="12sp" text="记录能量成熟时间，自动收集能量" />
+                                </vertical>
+                                <checkbox id="checkMyRemainingTime" marginLeft="4" marginRight="6" checked="false" />
                             </horizontal>
 
                             <horizontal gravity="right">
@@ -123,6 +132,7 @@ let FunctionConstant = require('./constant/FunctionConstant.js');
 
 let functionStorage = storages.create(FunctionConstant.FUNCTION);
 let fixedTimeCollectEnergy = functionStorage.get(FunctionConstant.FIXED_TIME_COLLECT_ENERGY) || {};
+let checkMyRemainingTime = functionStorage.get(FunctionConstant.CHECK_MY_REMAINING_TIME) || {};
 
 let AntForestExecution = null;
 
@@ -202,9 +212,15 @@ function initData() {
     }
     //#endregion
 
-    //#region 检测剩余时间
+    //#region 检测好友的剩余时间
     if (checkRemainingTimeSetting.enabled == true) {
         ui.checkRemainingTime.setChecked(true)
+    }
+    //#endregion
+
+    //#region 检测我的能量剩余时间
+    if (checkMyRemainingTime.enabled == true) {
+        ui.checkMyRemainingTime.setChecked(true)
     }
     //#endregion
 }
@@ -373,6 +389,23 @@ function initAction() {
         checkRemainingTimeSetting.enabled = checked;
 
         settingsStorages.put(SettingConstant.CHECK_REMAINING_TIME_SETTING, checkRemainingTimeSetting)
+    })
+    //#endregion
+
+    //#region 检测我的能量剩余时间
+    ui.checkMyRemainingTime.on("check", (checked) => {
+        if (checked) {
+            try {
+                $plugins.load("com.hraps.ocr");
+            } catch (error) {
+                alert("OCR插件未安装~", "此功能需要自行安装插件才可使用，下载地址：https://wws.lanzoux.com/iduulmofune，提取码：habv");
+                ui.checkMyRemainingTime.setChecked(false);
+            }
+
+            functionStorage.put(FunctionConstant.CHECK_MY_REMAINING_TIME, { enabled: true })
+        } else {
+            functionStorage.put(FunctionConstant.CHECK_MY_REMAINING_TIME, { enabled: false })
+        }
     })
     //#endregion
 
