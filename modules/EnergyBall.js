@@ -92,8 +92,10 @@ EnergyBall.collectMyEnergyBall = function () {
 
             if (results.size() == 2 && results.get(0).text == "还剩") {
                 let timeStr = results.get(1).text;
+                console.log("自己能量球剩余时间【" + timeStr + "】");
+
                 if (parseInt(timeStr.substring(0, 2)) == 0) {
-                    let remainingTime = parseInt(Str.substring(3, 5));
+                    let remainingTime = parseInt(Str.slice(-2));
                     if (!isNaN(remainingTime) && remainingTime < remainingTimeMin) {
                         remainingTimeMin = remainingTime;
                     }
@@ -256,12 +258,19 @@ EnergyBall.collectFriendEnergyBall = function () {
 
     if (collection.remainingTime < 61 && checkRemainingTimeSetting.enabled == true) {
         let nextTime = new Date().getTime() + collection.remainingTime * 60 * 1000;
-        nextTime = new Date(nextTime);
 
-        let task = $timers.addDisposableTask({
-            path: files.cwd() + "/AntForest.js",
-            date: format(nextTime, "yyyy-MM-ddThh:mm"),
-        })
+        let existingTask = $timers.queryTimedTasks({})
+            .filter(t => t.timeFlag == 0 && files.getName(t.scriptPath) == "AntForest.js")
+            .some(t => t.millis < nextTime + 60 * 1000 && t.millis > nextTime - 60 * 1000);
+
+        if (!existingTask) {
+            nextTime = new Date(nextTime);
+
+            let task = $timers.addDisposableTask({
+                path: files.cwd() + "/AntForest.js",
+                date: format(nextTime, "yyyy-MM-ddThh:mm"),
+            })
+        }
     }
 
     text("种树").waitFor();
