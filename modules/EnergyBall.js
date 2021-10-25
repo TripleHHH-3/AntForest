@@ -65,54 +65,70 @@ EnergyBall.collectMyEnergyBall = function () {
 
         console.log("检测能量球剩余时间");
 
-        let energyBallArr = EnergyBall.findEnergyBall();
-
-        if (energyBallArr.length > 0) {
-            //导入插件
-            let ocr;
-            try {
-                ocr = $plugins.load("com.hraps.ocr");
-            } catch (error) {
-                return;//没有ocr插件，直接结束
-            }
-
-            let cs = captureScreen();
-
+        while (true) {
             let remainingTimeMin = 60;
 
-            energyBallArr.forEach(energyBall => {
+            let energyBallArr = EnergyBall.findEnergyBall();
 
-                //裁剪出能量球图片
-                let ballImg = images.clip(
-                    cs,
-                    energyBall.x - energyBall.radius,
-                    energyBall.y - energyBall.radius,
-                    energyBall.radius * 2,
-                    energyBall.radius * 2
-                );
-
-                results = ocr.detect(ballImg.getBitmap(), 0.8)
-                //识别结果过滤
-                results = ocr.filterScore(results, 0.5, 0.5, 0.5)
-
-                if (results.size() == 2 && results.get(0).text == "还剩") {
-                    let timeStr = results.get(1).text;
-                    console.log("能量球剩余时间【" + timeStr + "】");
-
-                    if (parseInt(timeStr.substring(0, 2)) == 0) {
-                        let remainingTime = parseInt(timeStr.slice(-2));
-                        if (!isNaN(remainingTime) && remainingTime < remainingTimeMin) {
-                            remainingTimeMin = remainingTime;
-                        }
-                    }
+            if (energyBallArr.length > 0) {
+                //导入插件
+                let ocr;
+                try {
+                    ocr = $plugins.load("com.hraps.ocr");
+                } catch (error) {
+                    return;//没有ocr插件，直接结束
                 }
 
-                ballImg.recycle()
-            })
+                let cs = captureScreen();
+
+                energyBallArr.forEach(energyBall => {
+
+                    //裁剪出能量球图片
+                    let ballImg = images.clip(
+                        cs,
+                        energyBall.x - energyBall.radius,
+                        energyBall.y - energyBall.radius,
+                        energyBall.radius * 2,
+                        energyBall.radius * 2
+                    );
+
+                    results = ocr.detect(ballImg.getBitmap(), 0.8)
+                    //识别结果过滤
+                    results = ocr.filterScore(results, 0.5, 0.5, 0.5)
+
+                    if (results.size() == 2 && results.get(0).text == "还剩") {
+                        let timeStr = results.get(1).text;
+                        console.log("能量球剩余时间【" + timeStr + "】");
+
+                        if (parseInt(timeStr.substring(0, 2)) == 0) {
+                            let remainingTime = parseInt(timeStr.slice(-2));
+                            if (!isNaN(remainingTime) && remainingTime < remainingTimeMin) {
+                                remainingTimeMin = remainingTime;
+                            }
+                        }
+                    }
+
+                    ballImg.recycle()
+                })
+
+                //循环收集自己的能量，收集完重新检测剩余能量
+                if (remainingTimeMin == 1) {
+                    for (let time = 60; time == 0; time--) {
+                        EnergyBall.collectEnergyBall();
+                        let remainbBallArr = EnergyBall.findEnergyBall();
+                        if (remainbBallArr < energyBallArr) {
+                            break;
+                        }
+                    }
+                    continue;
+                }
+            }
 
             if (remainingTimeMin < 60) {
                 addDisposableTask(remainingTimeMin);
             }
+
+            break;
         }
     }
     //#endregion

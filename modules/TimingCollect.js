@@ -9,7 +9,7 @@ let timingCollectSetting = settingsStorages.get(SettingConstant.TIMING_COLLECT_S
 let TimingCollect = {
     timingCollect: function (nowTime) {
         //未启动定时功能直接返回
-        if (timingCollectSetting.enabled) {
+        if (!timingCollectSetting.enabled) {
             return;
         }
 
