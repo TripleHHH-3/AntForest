@@ -27,7 +27,7 @@ EnergyBall.findEnergyBall = function () {
         region: [0, EnergyBall.REGION_Y, SysConstant.DEVICE_WIDETH, EnergyBall.REGION_H],
         dp: 1,
         minDst: EnergyBall.MIN_RADIUS,
-        param1: 50,
+        param1: 40,
         param2: 50,
         minRadius: EnergyBall.MIN_RADIUS,
         maxRadius: EnergyBall.MAX_RADIUS,
@@ -100,7 +100,7 @@ EnergyBall.collectMyEnergyBall = function () {
                     console.log("能量球剩余时间【" + timeStr + "】");
 
                     if (parseInt(timeStr.substring(0, 2)) == 0) {
-                        let remainingTime = parseInt(Str.slice(-2));
+                        let remainingTime = parseInt(timeStr.slice(-2));
                         if (!isNaN(remainingTime) && remainingTime < remainingTimeMin) {
                             remainingTimeMin = remainingTime;
                         }
@@ -111,13 +111,7 @@ EnergyBall.collectMyEnergyBall = function () {
             })
 
             if (remainingTimeMin < 60) {
-                let nextTime = new Date().getTime() + remainingTimeMin * 60 * 1000;
-                nextTime = new Date(nextTime);
-
-                let task = $timers.addDisposableTask({
-                    path: files.cwd() + "/AntForest.js",
-                    date: format(nextTime, "yyyy-MM-ddThh:mm"),
-                })
+                addDisposableTask(remainingTimeMin);
             }
         }
     }
@@ -138,7 +132,19 @@ EnergyBall.traversalFriendRanking = function () {
     let indexTemp = 0
 
     while (true) {
-        let friendList = className("ListView").untilFind().get(1).children();
+        let friendList;
+
+        let listViews = className("ListView").untilFind();
+        let listView0 = listViews.get(0);
+        let listView1 = listViews.get(1);
+
+        if (listView0.bounds().top > listView1.bounds().top) {
+            friendList = listView0.children();
+        } else {
+            friendList = listView1.children();
+        }
+
+        friendList = className("ListView").untilFind().get(1).children();
 
         let cs = captureScreen();
 
@@ -271,24 +277,28 @@ EnergyBall.collectFriendEnergyBall = function () {
     }
 
     if (collection.remainingTime < 61 && checkRemainingTimeSetting.enabled == true) {
-        let nextTime = new Date().getTime() + collection.remainingTime * 60 * 1000;
-
-        let existingTask = $timers.queryTimedTasks({})
-            .filter(t => t.timeFlag == 0 && files.getName(t.scriptPath) == "AntForest.js")
-            .some(t => t.millis < nextTime + 60 * 1000 && t.millis > nextTime - 60 * 1000);
-
-        if (!existingTask) {
-            nextTime = new Date(nextTime);
-
-            let task = $timers.addDisposableTask({
-                path: files.cwd() + "/AntForest.js",
-                date: format(nextTime, "yyyy-MM-ddThh:mm"),
-            })
-        }
+        addDisposableTask(collection.remainingTime);
     }
 
     text("种树").waitFor();
     sleep(500)
+}
+
+function addDisposableTask(remainingTime) {
+    let nextTime = new Date().getTime() + remainingTime * 60 * 1000;
+
+    let existingTask = $timers.queryTimedTasks({})
+        .filter(t => t.timeFlag == 0 && files.getName(t.scriptPath) == "AntForest.js")
+        .some(t => t.millis < nextTime + 60 * 1000 && t.millis > nextTime - 60 * 1000);
+
+    if (!existingTask) {
+        nextTime = new Date(nextTime);
+
+        let task = $timers.addDisposableTask({
+            path: files.cwd() + "/AntForest.js",
+            date: format(nextTime, "yyyy-MM-ddThh:mm"),
+        })
+    }
 }
 
 function format(time, fmt) {
