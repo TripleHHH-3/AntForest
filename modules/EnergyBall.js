@@ -160,8 +160,6 @@ EnergyBall.traversalFriendRanking = function () {
             friendList = listView1.children();
         }
 
-        friendList = className("ListView").untilFind().get(1).children();
-
         let cs = captureScreen();
 
         for (let index = indexTemp; index < friendList.length; index++) {
@@ -190,8 +188,8 @@ EnergyBall.traversalFriendRanking = function () {
                 collection.remainingTime = energyBall.remainingTime;
             }
 
-            //当存在剩余时间在2分钟内则强制设true，让脚本循环查看排行榜
-            if (energyBall.collectable && energyBall.remainingTime && energyBall.remainingTime <= 2) {
+            //当存在剩余时间在1分钟内则强制设true，让脚本循环查看排行榜
+            if (energyBall.collectable && energyBall.remainingTime && energyBall.remainingTime == 1) {
                 collection.collect = true;
             }
         }
