@@ -85,6 +85,11 @@ function main() {
 
     console.log("打开支付宝");
 
+    if(currentPackage()=="com.eg.android.AlipayGphone "){
+        home();
+        sleep(500)
+    }
+
     app.startActivity({
         action: "VIEW",
         data: "alipays://platformapi/startapp?appId=60000002"

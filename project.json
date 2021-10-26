@@ -8,6 +8,9 @@
     "versionName": "1.0.3",
     "versionCode": 1,
     "launchConfig": {
-        "hideLogs": true
+        "displaySplash": true,
+        "hideLogs": true,
+        "splashText": "Make by HHH",
+        "stableMode": false
     }
 }

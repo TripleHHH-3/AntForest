@@ -148,17 +148,27 @@ EnergyBall.traversalFriendRanking = function () {
     let indexTemp = 0
 
     while (true) {
+        //#region 搜索排行榜控件
         let friendList;
+        let listViews;
 
-        let listViews = className("ListView").untilFind();
+        //有两个同名控件
+        while (true) {
+            listViews = className("ListView").find();
+            if (listViews.size() == 2) {
+                break;
+            }
+        }
+
+        //处于下方的才是目标listView控件
         let listView0 = listViews.get(0);
         let listView1 = listViews.get(1);
-
         if (listView0.bounds().top > listView1.bounds().top) {
             friendList = listView0.children();
         } else {
             friendList = listView1.children();
         }
+        //#endregion
 
         let cs = captureScreen();
 
