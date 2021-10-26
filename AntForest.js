@@ -85,7 +85,7 @@ function main() {
 
     console.log("打开支付宝");
 
-    if(currentPackage()=="com.eg.android.AlipayGphone "){
+    if (currentPackage() == "com.eg.android.AlipayGphone") {
         home();
         sleep(500)
     }
