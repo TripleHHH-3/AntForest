@@ -53,6 +53,31 @@ EnergyBall.collectEnergyBall = function () {
 }
 
 /**
+ * 找能量罩
+ */
+ EnergyBall.findEnergyShield = function () {
+    // 截图
+    let img = captureScreen();
+    // 灰度化图片
+    let gray = images.grayscale(img);
+    // 找圆
+    let arr = images.findCircles(gray, {
+        param1: 80,
+        param2: 80,
+        minRadius: device.width / 3,
+        maxRadius: device.width / 2,
+    });
+    // 回收图片
+    gray.recycle();
+
+    if (arr.length > 0) {
+        console.log("发现能量罩：" + arr.length);
+    }
+
+    return arr.length > 0;
+}
+
+/**
  * 收集自己的能量
  */
 EnergyBall.collectMyEnergyBall = function () {
@@ -188,9 +213,10 @@ EnergyBall.traversalFriendRanking = function () {
 
             if (energyBall.collectable && !energyBall.remainingTime) {
                 //收集朋友能量
-                EnergyBall.enterFriendHomepage(friend);
+                if (!collection.collect) {
+                    collection.collect = EnergyBall.enterFriendHomepage(friend);
+                }
                 cs = captureScreen();
-                collection.collect = true;
             }
 
             //记录最小的剩余时间
@@ -264,15 +290,26 @@ EnergyBall.enterFriendHomepage = function (friend) {
 
     let title = id("h5_tv_title").findOne()
     let friendName = title.getText().slice(0, -5);
-    console.log("收集好友【" + friendName + "】的能量");
 
-    //收取能量
-    EnergyBall.collectEnergyBall();
+    let collectSuccess;
+    if (EnergyBall.findEnergyShield()) {
+        console.log("好友【" + friendName + "】有能量罩");
+
+        collectSuccess = false;
+    } else {
+        console.log("收集好友【" + friendName + "】的能量");
+        //收取能量
+        EnergyBall.collectEnergyBall();
+
+        collectSuccess = true;
+    }
 
     //返回排行榜
     back();
     text("排行榜").waitFor();
     sleep(500)
+
+    return collectSuccess;
 }
 
 /**
