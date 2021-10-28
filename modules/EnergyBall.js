@@ -215,6 +215,8 @@ EnergyBall.traversalFriendRanking = function () {
                 //收集朋友能量
                 if (!collection.collect) {
                     collection.collect = EnergyBall.enterFriendHomepage(friend);
+                }else{
+                    EnergyBall.enterFriendHomepage(friend);
                 }
                 cs = captureScreen();
             }
