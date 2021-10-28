@@ -27,8 +27,8 @@ EnergyBall.findEnergyBall = function () {
         region: [0, EnergyBall.REGION_Y, SysConstant.DEVICE_WIDETH, EnergyBall.REGION_H],
         dp: 1,
         minDst: EnergyBall.MIN_RADIUS,
-        param1: 40,
-        param2: 50,
+        param1: 30,
+        param2: 30,
         minRadius: EnergyBall.MIN_RADIUS,
         maxRadius: EnergyBall.MAX_RADIUS,
     });
@@ -351,7 +351,7 @@ EnergyBall.collectFriendEnergyBall = function () {
     }
 
     if (collection.remainingTime < 61 && checkRemainingTimeSetting.enabled == true) {
-        let nextTime = collection.markTime.getTime() + remainingTime * 60000;
+        let nextTime = collection.markTime.getTime() + collection.remainingTime * 60000;
         addDisposableTask(nextTime);
     }
 
@@ -366,8 +366,6 @@ function addDisposableTask(nextTime) {
 
     if (!existingTask) {
         nextTime = new Date(nextTime);
-
-        console.log(nextTime);
 
         let task = $timers.addDisposableTask({
             path: files.cwd() + "/AntForest.js",
