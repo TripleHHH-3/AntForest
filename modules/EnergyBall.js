@@ -55,7 +55,7 @@ EnergyBall.collectEnergyBall = function () {
 /**
  * 找能量罩
  */
- EnergyBall.findEnergyShield = function () {
+EnergyBall.findEnergyShield = function () {
     // 截图
     let img = captureScreen();
     // 灰度化图片
@@ -90,8 +90,10 @@ EnergyBall.collectMyEnergyBall = function () {
 
         console.log("检测能量球剩余时间");
 
+        let markTime = null;
+
         while (true) {
-            let remainingTimeMin = 60;
+            let remainingTimeMin = null;
 
             let energyBallArr = EnergyBall.findEnergyBall();
 
@@ -103,6 +105,8 @@ EnergyBall.collectMyEnergyBall = function () {
                 } catch (error) {
                     return;//没有ocr插件，直接结束
                 }
+
+                markTime = new Date().getTime()
 
                 let cs = captureScreen();
 
@@ -125,10 +129,15 @@ EnergyBall.collectMyEnergyBall = function () {
                         let timeStr = results.get(1).text;
                         console.log("能量球剩余时间【" + timeStr + "】");
 
-                        if (parseInt(timeStr.substring(0, 2)) == 0) {
-                            let remainingTime = parseInt(timeStr.slice(-2));
-                            if (!isNaN(remainingTime) && remainingTime < remainingTimeMin) {
-                                remainingTimeMin = remainingTime;
+                        if (timeStr.length == 5 && (timeStr[2] == "." || timeStr[2] == ":")) {
+                            let hour = parseInt(timeStr.substring(0, 2));
+                            let minute = parseInt(timeStr.slice(-2));
+
+                            if (!isNaN(hour) && !isNaN(minute)) {
+                                remainingTime = hour * 60 * 60000 + minute * 60000
+                                if (remainingTimeMin == null || remainingTime < remainingTimeMin) {
+                                    remainingTimeMin = remainingTime;
+                                }
                             }
                         }
                     }
@@ -137,7 +146,7 @@ EnergyBall.collectMyEnergyBall = function () {
                 })
 
                 //循环收集自己的能量，收集完重新检测剩余能量
-                if (remainingTimeMin == 1) {
+                if (remainingTimeMin == 60000) {
                     for (let time = 60; time == 0; time--) {
                         EnergyBall.collectEnergyBall();
                         let remainbBallArr = EnergyBall.findEnergyBall();
@@ -149,8 +158,8 @@ EnergyBall.collectMyEnergyBall = function () {
                 }
             }
 
-            if (remainingTimeMin < 60) {
-                addDisposableTask(remainingTimeMin);
+            if (remainingTimeMin) {
+                addDisposableTask(markTime + remainingTimeMin);
             }
 
             break;
@@ -165,7 +174,8 @@ EnergyBall.collectMyEnergyBall = function () {
 EnergyBall.traversalFriendRanking = function () {
     let collection = {
         collect: false,//是否收集
-        remainingTime: 61//朋友能量剩余时间
+        remainingTime: 61,//朋友能量剩余时间
+        markTime: null
     };
 
     let rankingList = className("android.webkit.WebView").findOne();
@@ -215,7 +225,7 @@ EnergyBall.traversalFriendRanking = function () {
                 //收集朋友能量
                 if (!collection.collect) {
                     collection.collect = EnergyBall.enterFriendHomepage(friend);
-                }else{
+                } else {
                     EnergyBall.enterFriendHomepage(friend);
                 }
                 cs = captureScreen();
@@ -224,6 +234,7 @@ EnergyBall.traversalFriendRanking = function () {
             //记录最小的剩余时间
             if (energyBall.collectable && energyBall.remainingTime && energyBall.remainingTime < collection.remainingTime) {
                 collection.remainingTime = energyBall.remainingTime;
+                collection.markTime = energyBall.markTime;
             }
 
             //当存在剩余时间在1分钟内则强制设true，让脚本循环查看排行榜
@@ -274,7 +285,7 @@ function judgingCollectable(cs, friend) {
                 return { collectable: true, remainingTime: null };
             } else {
                 //返回可收集能量的剩余时间
-                return { collectable: true, remainingTime: parseInt(remainingTime) };
+                return { collectable: true, remainingTime: parseInt(remainingTime), markTime: new Date() };
             }
         }
     }
@@ -340,22 +351,23 @@ EnergyBall.collectFriendEnergyBall = function () {
     }
 
     if (collection.remainingTime < 61 && checkRemainingTimeSetting.enabled == true) {
-        addDisposableTask(collection.remainingTime);
+        let nextTime = collection.markTime.getTime() + remainingTime * 60000;
+        addDisposableTask(nextTime);
     }
 
     text("种树").waitFor();
     sleep(500)
 }
 
-function addDisposableTask(remainingTime) {
-    let nextTime = new Date().getTime() + remainingTime * 60 * 1000;
-
+function addDisposableTask(nextTime) {
     let existingTask = $timers.queryTimedTasks({})
         .filter(t => t.timeFlag == 0 && files.getName(t.scriptPath) == "AntForest.js")
         .some(t => t.millis < nextTime + 60 * 1000 && t.millis > nextTime - 60 * 1000);
 
     if (!existingTask) {
         nextTime = new Date(nextTime);
+
+        console.log(nextTime);
 
         let task = $timers.addDisposableTask({
             path: files.cwd() + "/AntForest.js",
