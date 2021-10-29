@@ -56,25 +56,36 @@ EnergyBall.collectEnergyBall = function () {
  * 找能量罩
  */
 EnergyBall.findEnergyShield = function () {
-    // 截图
-    let img = captureScreen();
-    // 灰度化图片
-    let gray = images.grayscale(img);
-    // 找圆
-    let arr = images.findCircles(gray, {
-        param1: 80,
-        param2: 80,
-        minRadius: device.width / 3,
-        maxRadius: device.width / 2,
-    });
-    // 回收图片
-    gray.recycle();
+    text("点击展开好友动态").findOne().click();
 
-    if (arr.length > 0) {
-        console.log("发现能量罩：" + arr.length);
+    //为了尽快刷出正确的ListView
+    let friendDynamic = null;
+    for (let size = 0; size < 2;) {
+        friendDynamic = className("ListView").findOne();
+        size = friendDynamic.childCount();
     }
 
-    return arr.length > 0;
+    let dynamic = friendDynamic.children()
+
+    //#region 为了减少遍历次数先找出索引
+    let today = null;
+    for (let i = 1; i < dynamic.length; i++) {
+        if (dynamic[i].text() == "昨天") {
+            today = dynamic[i].indexInParent();
+            break;
+        }
+    }
+    today = today || dynamic.length;
+    //#endregion
+
+    //以这两个为关键字认定有能量罩
+    for (let i = 1; i < today; i++) {
+        if (dynamic[i].findOne(textMatches("使用了保护罩|来收取能量，被保护罩阻挡了"))) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 /**

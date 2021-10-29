@@ -5,12 +5,13 @@
         "build"
     ],
     "packageName": "com.hhh.ant.forest",
-    "versionName": "1.0.7",
+    "versionName": "1.0.8",
     "versionCode": 1,
     "launchConfig": {
         "displaySplash": true,
         "hideLogs": true,
         "splashText": "Make by HHH",
         "stableMode": false
-    }
+    },
+    "encryptLevel": 3
 }
