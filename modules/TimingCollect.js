@@ -52,6 +52,21 @@ let TimingCollect = {
         timingCollectSetting.taskId = task.id
 
         settingsStorages.put(SettingConstant.TIMING_COLLECT_SETTING, timingCollectSetting);
+    },
+
+    addDisposableTask: function (nextTime) {
+        let existingTask = $timers.queryTimedTasks({})
+            .filter(t => t.timeFlag == 0 && files.getName(t.scriptPath) == "AntForest.js")
+            .some(t => t.millis < nextTime + 60000 && t.millis > nextTime - 60000);
+
+        if (!existingTask) {
+            nextTime = new Date(nextTime);
+
+            let task = $timers.addDisposableTask({
+                path: files.cwd() + "/AntForest.js",
+                date: format(nextTime, "yyyy-MM-ddThh:mm"),
+            })
+        }
     }
 }
 

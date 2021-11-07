@@ -169,6 +169,7 @@ EnergyBall.collectMyEnergyBall = function () {
                         if (remainbBallArr < energyBallArr) {
                             break;
                         }
+                        sleep(1000)
                     }
                     continue;
                 }

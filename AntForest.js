@@ -5,7 +5,71 @@ let TimingCollect = require('./modules/TimingCollect.js');
 checkRunning();
 initMonitor();
 unlockScreen();
-main();
+mainDialog();
+
+function mainDialog() {
+    let reciprocalThread;
+    let postponeTime;
+
+    let collect = events.emitter(threads.currentThread());
+
+    //#region 对话框
+    let tipDialog = dialogs.build({
+        //对话框标题
+        title: "绿色能量提示",
+        //对话框内容
+        content: "即将在5秒后运行，或者选择下项推迟",
+        contentColor: "#DC143C",
+        //单选内容
+        items: ["5分钟", "30分钟", "60分钟"],
+        itemsSelectMode: "single",
+        itemsSelectedIndex: 0,
+        itemsColor: "#708090",
+        //确定键内容
+        positive: "推迟收集",
+        positiveColor: "#DAA520",
+        //取消键内容
+        negative: "放弃能量",
+        negativeColor: "#000000",
+        //中性键内容
+        neutral: "立即快乐",
+        neutralColor: "#00FF7F"
+    }).on("positive", () => {
+        //监听确定键
+        let nextTime = new Date().getTime() + postponeTime * 60000;
+
+        TimingCollect.addDisposableTask(nextTime);
+
+        exit();
+    }).on("negative", () => {
+        console.log("放弃任务");
+        exit();
+    }).on("neutral", () => {
+        collect.emit('start');
+    }).on("single_choice", (index, item) => {
+        postponeTime = parseInt(item.slice(0, -2));
+    }).on("any", (action, dialog) => {
+        //停止线程执行
+        reciprocalThread.interrupt();
+    }).show();
+    //#endregion
+
+    //禁止点击外部区域
+    tipDialog.setCanceledOnTouchOutside(false);
+
+    //倒计时子线程
+    reciprocalThread = threads.start(function () {
+        for (let sec = 5; sec != -1; sec--) {
+            tipDialog.setContent("即将在 " + sec.toString() + "秒 后运行，或者选择下项推迟");
+            sleep(1000)
+        }
+
+        text("立即快乐").findOne().click();
+    });
+
+    //监听收集按钮
+    collect.on('start', () => main());
+}
 
 function unlockScreen() {
     let SettingConstant = require("./constant/SettingConstant.js");
@@ -71,7 +135,12 @@ function unlockScreen() {
 }
 
 function main() {
-    toast("脚本启动中···")
+    //防止运行超时
+    threads.start(function () {
+        setTimeout(function () {
+            exit();
+        }, 15 * 60 * 1000);
+    })
 
     console.log("请求权限");
 

@@ -397,12 +397,11 @@ function initAction() {
         if (checked) {
             try {
                 $plugins.load("com.hraps.ocr");
+                settingsStorages.put(SettingConstant.CHECK_MY_REMAINING_TIME_SETTING, { enabled: true })
             } catch (error) {
                 alert("OCR插件未安装~", "此功能需要自行安装插件才可使用，下载地址：https://wws.lanzoux.com/iduulmofune，提取码：habv");
                 ui.checkMyRemainingTime.setChecked(false);
             }
-
-            settingsStorages.put(SettingConstant.CHECK_MY_REMAINING_TIME_SETTING, { enabled: true })
         } else {
             settingsStorages.put(SettingConstant.CHECK_MY_REMAINING_TIME_SETTING, { enabled: false })
         }
