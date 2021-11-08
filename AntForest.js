@@ -64,7 +64,8 @@ function mainDialog() {
             sleep(1000)
         }
 
-        text("立即快乐").findOne().click();
+        tipDialog.dismiss();
+        collect.emit('start');
     });
 
     //监听收集按钮
