@@ -133,8 +133,6 @@ let FunctionConstant = require('./constant/FunctionConstant.js');
 let functionStorage = storages.create(FunctionConstant.FUNCTION);
 let fixedTimeCollectEnergy = functionStorage.get(FunctionConstant.FIXED_TIME_COLLECT_ENERGY) || {};
 
-let AntForestExecution = null;
-
 let SettingConstant = require('./constant/SettingConstant.js');
 
 let settingsStorages = storages.create(SettingConstant.SETTINGS_STORAGE);
@@ -248,11 +246,6 @@ function initMonitor() {
         ui.autoService.checked = auto.service != null;
         //同步悬浮窗权限按钮
         ui.floatyService.checked = floaty.checkPermission();
-
-        //启用开始运行按钮
-        if (AntForestExecution && AntForestExecution.getEngine()) {
-            ui.start.setEnabled(AntForestExecution.getEngine().isDestroyed());
-        }
     });
 }
 
@@ -291,13 +284,23 @@ function initAction() {
             return;
         }
 
-        //禁止按钮
-        ui.start.setEnabled(false);
+        //防止重复启动脚本
+        let count = 0;
 
-        //开启脚本
-        threads.start(function () {
-            AntForestExecution = engines.execScriptFile("./AntForest.js");
-        });
+        engines.all().forEach(i => {
+            if (files.getName(i.getSource()) == "AntForest.js") {
+                count++;
+            }
+        })
+
+        if (count != 0) {
+            toast("AntForest已有实例运行");
+        } else {
+            //开启脚本
+            threads.start(function () {
+                engines.execScriptFile("./AntForest.js");
+            });
+        }
     });
     //#endregion
 

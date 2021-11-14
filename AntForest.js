@@ -138,9 +138,12 @@ function unlockScreen() {
 function main() {
     //防止运行超时
     threads.start(function () {
+        setInterval(function () {
+        }, 20000);
+
         setTimeout(function () {
             exit();
-        }, 15 * 60 * 1000);
+        }, 10 * 60 * 1000);
     })
 
     console.log("请求权限");
@@ -153,7 +156,7 @@ function main() {
         exit();
     }
 
-    console.log("打开支付宝");
+    toastLog("正在启动支付宝···")
 
     if (currentPackage() == "com.eg.android.AlipayGphone") {
         home();
