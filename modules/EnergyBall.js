@@ -62,31 +62,33 @@ EnergyBall.findEnergyShield = function () {
     let friendDynamic = null;
     while (true) {
         friendDynamic = className("ListView").findOne();
-        if (friendDynamic.childCount() == 1 && friendDynamic.children().get(0).text() == "暂无最新动态，快和好友去互动吧#^_^#") {
-            break;
-        }
         if (friendDynamic.childCount() > 1) {
             break;
         }
-    }
-
-    let dynamic = friendDynamic.children()
-
-    //#region 为了减少遍历次数先找出索引
-    let lastDay = null;
-    for (let i = 1; i < dynamic.length; i++) {
-        if (dynamic[i].childCount() == 0) {
-            lastDay = dynamic[i].indexInParent();
+        if (friendDynamic.childCount() == 1 && friendDynamic.children().get(0).text() == "暂无最新动态，快和好友去互动吧#^_^#") {
             break;
         }
     }
-    lastDay = lastDay || dynamic.length;
-    //#endregion
 
-    //以这两个为关键字认定有能量罩
-    for (let i = 1; i < lastDay; i++) {
-        if (dynamic[i].findOne(textMatches("使用了保护罩|来收取能量，被保护罩阻挡了"))) {
-            return true;
+    let dynamic = friendDynamic.children();
+
+    if (dynamic[0].text() == "今天") {
+        //#region 为了减少遍历次数先找出索引
+        let lastDay = null;
+        for (let i = 1; i < dynamic.length; i++) {
+            if (dynamic[i].childCount() == 0) {
+                lastDay = dynamic[i].indexInParent();
+                break;
+            }
+        }
+        lastDay = lastDay || dynamic.length;
+        //#endregion
+
+        //以这两个为关键字认定有能量罩
+        for (let i = 1; i < lastDay; i++) {
+            if (dynamic[i].findOne(textMatches(".*保护罩.*"))) {
+                return true;
+            }
         }
     }
 
