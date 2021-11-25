@@ -59,6 +59,15 @@ ui.layout(
                                 <checkbox id="checkMyRemainingTime" marginLeft="4" marginRight="6" checked="false" />
                             </horizontal>
 
+                            <horizontal gravity="center_vertical" padding="5 5" >
+                                <View bg="#00FFFF" h="*" w="10"  ></View>
+                                <vertical padding="10 8" h="auto" w="0" layout_weight="1">
+                                    <text w="auto" textColor="#222222" textSize="14sp" text="每日签到" />
+                                    <text w="auto" textColor="#999999" textSize="12sp" text="定时每天12点执行" />
+                                </vertical>
+                                <checkbox id="dailySignIn" marginLeft="4" marginRight="6" checked="false" />
+                            </horizontal>
+
                             <horizontal gravity="right">
                                 <button style="Widget.AppCompat.Button.Colored" id="start" text="开 始 运 行" padding="12dp" w="*" textSize="17" />
                                 {/* <button style="Widget.AppCompat.Button.Colored" id="close" text="关闭线程" /> */}
@@ -139,6 +148,7 @@ let settingsStorages = storages.create(SettingConstant.SETTINGS_STORAGE);
 let timingCollectSetting = settingsStorages.get(SettingConstant.TIMING_COLLECT_SETTING) || {};
 let checkRemainingTimeSetting = settingsStorages.get(SettingConstant.CHECK_REMAINING_TIME_SETTING) || {};
 let checkMyRemainingTimeSetting = settingsStorages.get(SettingConstant.CHECK_MY_REMAINING_TIME_SETTING) || {};
+let dailySignInSetting = settingsStorages.get(SettingConstant.DAILY_SIGN_IN_SETTING) || {};
 
 initData();
 initLeftMenu();
@@ -219,6 +229,12 @@ function initData() {
     //#region 检测我的能量剩余时间
     if (checkMyRemainingTimeSetting.enabled == true) {
         ui.checkMyRemainingTime.setChecked(true)
+    }
+    //#endregion
+
+    //#region 每日签到
+    if (dailySignInSetting.enabled) {
+        ui.dailySignIn.setChecked(true)
     }
     //#endregion
 }
@@ -407,6 +423,31 @@ function initAction() {
             }
         } else {
             settingsStorages.put(SettingConstant.CHECK_MY_REMAINING_TIME_SETTING, { enabled: false })
+        }
+    })
+    //#endregion
+
+    //#region 每日签到
+    ui.dailySignIn.on("check", (checked) => {
+        if (checked) {
+            deleteTask();
+
+            let task = $timers.addDailyTask({
+                path: files.cwd() + "/modules/DailySignIn.js",
+                time: "12:00"
+            });
+
+            settingsStorages.put(SettingConstant.DAILY_SIGN_IN_SETTING, { enabled: true, taskId: task.id })
+        } else {
+            deleteTask();
+        }
+
+        function deleteTask() {
+            if (dailySignInSetting.enabled) {
+                $timers.removeTimedTask(dailySignInSetting.taskId);
+            }
+
+            settingsStorages.put(SettingConstant.DAILY_SIGN_IN_SETTING, {});
         }
     })
     //#endregion

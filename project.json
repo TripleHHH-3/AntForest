@@ -5,7 +5,7 @@
         "build"
     ],
     "packageName": "com.hhh.ant.forest",
-    "versionName": "1.0.8",
+    "versionName": "1.0.9",
     "versionCode": 1,
     "launchConfig": {
         "displaySplash": true,
